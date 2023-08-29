@@ -112,7 +112,7 @@ class Player : Fragment() {
                 binding.seekBar.setProgress(player.currentPosition.toInt())
                 binding.totalDuration.setText(formatTime(player.duration.toInt()))
                 binding.seekBar.setMax(player.duration.toInt())
-                binding.playButton.setImageResource(R.drawable.baseline_pause_circle_24)
+                binding.playButton.setImageResource(R.drawable.player_pause)
                 showCurrentArtwork()
                 updatePlayerPositionProgress()
                 if (!player.isPlaying) {
@@ -122,7 +122,7 @@ class Player : Fragment() {
             override fun onPlaybackStateChanged(playbackState: Int) {
                 if (playbackState == ExoPlayer.STATE_READY) {
                     binding.name.setText(Objects.requireNonNull(player.currentMediaItem)?.mediaMetadata?.title)
-                    binding.playButton.setImageResource(R.drawable.baseline_pause_circle_24)
+                    binding.playButton.setImageResource(R.drawable.player_pause)
                     binding.currentDuration.setText(formatTime(player.currentPosition.toInt()))
                     binding.seekBar.setProgress(player.currentPosition.toInt())
                     binding.totalDuration.setText(formatTime(player.duration.toInt()))
@@ -130,7 +130,7 @@ class Player : Fragment() {
                     showCurrentArtwork()
                     updatePlayerPositionProgress()
                 } else {
-                    binding.playButton.setImageResource(R.drawable.baseline_play_circle_24)
+                    binding.playButton.setImageResource(R.drawable.player_play)
                 }
             }
         })
@@ -141,7 +141,7 @@ class Player : Fragment() {
             binding.seekBar.setProgress(player.currentPosition.toInt())
             binding.totalDuration.setText(formatTime(player.duration.toInt()))
             binding.seekBar.setMax(player.duration.toInt())
-            binding.playButton.setImageResource(R.drawable.baseline_pause_circle_24)
+            binding.playButton.setImageResource(R.drawable.player_pause)
             showCurrentArtwork()
             updatePlayerPositionProgress()
             binding.nextButton.setOnClickListener {
@@ -161,11 +161,11 @@ class Player : Fragment() {
             binding.playButton.setOnClickListener {
                 if(player.isPlaying){
                     player.pause()
-                    binding.playButton.setImageResource(R.drawable.baseline_play_circle_24)
+                    binding.playButton.setImageResource(R.drawable.player_play)
                 }
                 else {
                     player.play()
-                    binding.playButton.setImageResource(R.drawable.baseline_pause_circle_24)
+                    binding.playButton.setImageResource(R.drawable.player_pause)
                 }
             }
             binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -194,7 +194,7 @@ class Player : Fragment() {
         val artworkUri = player.currentMediaItem?.mediaMetadata?.artworkUri
         val songPicImageView=binding.songPic
         val backPic=binding.backImage
-        
+
         binding.name.setText(Objects.requireNonNull(player.currentMediaItem)?.mediaMetadata?.title)
 
         if (artworkUri != null) {

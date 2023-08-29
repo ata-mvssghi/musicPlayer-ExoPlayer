@@ -29,9 +29,9 @@
             android:id="@+id/back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
-            android:layout_marginTop="40dp"
-            android:src="@drawable/baseline_arrow_back_ios_new_24"
+            android:layout_marginStart="28dp"
+            android:layout_marginTop="32dp"
+            android:src="@drawable/player_back_arrow"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -61,33 +61,22 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/songPic" />
 
-        <TextView
-            android:id="@+id/Singer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="52dp"
-            android:layout_marginTop="12dp"
-            android:text="TextView"
-            android:fontFamily="@font/bricolage"
-            android:textColor="@color/white"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/name" />
-
         <SeekBar
             android:id="@+id/seekBar"
             android:layout_width="325dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="40dp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.465"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/Singer" />
+            app:layout_constraintTop_toBottomOf="@+id/name" />
 
         <ImageView
             android:id="@+id/play_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
-            android:src="@drawable/baseline_play_circle_24"
+            android:src="@drawable/player_play"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
@@ -99,7 +88,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
             android:layout_marginEnd="56dp"
-            android:src="@drawable/baseline_skip_previous_24"
+            android:src="@drawable/player_previous"
             app:layout_constraintEnd_toStartOf="@+id/play_button"
             app:layout_constraintTop_toBottomOf="@+id/seekBar" />
 
@@ -109,7 +98,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="56dp"
             android:layout_marginTop="40dp"
-            android:src="@drawable/baseline_skip_next_24"
+            android:src="@drawable/player_next"
             app:layout_constraintStart_toEndOf="@+id/play_button"
             app:layout_constraintTop_toBottomOf="@+id/seekBar" />
 

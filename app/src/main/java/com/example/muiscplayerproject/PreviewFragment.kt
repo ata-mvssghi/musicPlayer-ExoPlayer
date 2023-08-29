@@ -42,6 +42,7 @@ class PreviewFragment : Fragment(), OnItemClickListener {
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.i("music","on create called on Preview Fragment")
     }
 
 
@@ -65,32 +66,17 @@ class PreviewFragment : Fragment(), OnItemClickListener {
                 player.playWhenReady=true
                 Log.i("music", "player initialized in preview fragment")
             }
-            else{
-                Log.i("music","Ay movassaghi")
-            }
         }
-        Log.i("music","kkkkkkkkkkkkkk")
         recyclerview = binding.recyclerView
         if (!isPermissionGranted()) {
             Log.i("music","permission not granted yet" )
             requestPermission()
         }
         fetchSongs()
-
-        //launch the storage permission launcher
-
-        //launch the storage permission launche
-
-
         //player controls
         playerControls()
-
-
-
-
         return binding.root
     }
-
     fun playerControls() {
         binding.bottomContainer.setOnClickListener {
 //           findNavController().navigate(R.id.action_previewFragment_to_player)
