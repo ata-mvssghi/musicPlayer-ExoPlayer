@@ -25,6 +25,8 @@
                 android:layout_marginTop="9dp"
                 android:layout_toEndOf="@+id/seprator"
                 android:text="TextView"
+                android:maxWidth="100dp"
+                android:singleLine="true"
                 android:textAlignment="center"
                 android:textColor="@color/black" />
 
@@ -46,10 +48,9 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="7dp"
                 android:layout_toEndOf="@+id/songImage"
-                android:autoSizeMaxTextSize="100dp"
-                android:ellipsize="end"
+                android:maxWidth="100dp"
                 android:singleLine="true"
-                android:text="adsfghjgfdsadfghjgfd"
+                android:text="dsf"
                 android:textAlignment="center"
                 android:textColor="@color/black" />
 

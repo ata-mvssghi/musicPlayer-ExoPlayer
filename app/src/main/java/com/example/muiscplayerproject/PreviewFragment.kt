@@ -252,7 +252,7 @@ class PreviewFragment : Fragment(), OnItemClickListener {
         val layoutManager = GridLayoutManager(requireContext(), 1)
         recyclerview.setLayoutManager(layoutManager)
 
-        adapter = SongAdapter(songs, player, this)
+        adapter = SongAdapter(songs, player, this,requireContext())
         recyclerview.adapter = adapter
     }
 

@@ -1,5 +1,6 @@
 package com.example.muiscplayerproject
 
+import android.content.ContentResolver
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,6 +16,7 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.a2ndproject.sharedViewModel.SharedViewModel
 import com.example.muiscplayerproject.databinding.FragmentPlayerBinding
+import java.lang.Exception
 import java.util.Objects
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
@@ -93,7 +95,6 @@ class Player : Fragment() {
         return String.format("%02d:%02d", minutes, seconds)
     }
     fun updatePlayerPositionProgress() {
-        Log.i("music","update player pision")
         requireActivity().runOnUiThread {
             if (player.isPlaying) {
                 binding.currentDuration.text = formatTime(player.currentPosition.toInt())
@@ -190,21 +191,41 @@ class Player : Fragment() {
     }
 
     fun showCurrentArtwork(){
-        val artworkUri = player?.currentMediaItem?.mediaMetadata?.artworkUri
+        val artworkUri = player.currentMediaItem?.mediaMetadata?.artworkUri
         val songPicImageView=binding.songPic
         val backPic=binding.backImage
+        
+        binding.name.setText(Objects.requireNonNull(player.currentMediaItem)?.mediaMetadata?.title)
+
         if (artworkUri != null) {
-            Glide.with(requireActivity())
-                .load(artworkUri)
-                .into(songPicImageView)
-            Glide.with(requireContext())
-                .load(artworkUri)
-                .into(backPic)
-        }
-        else{
-            binding.backImage.setImageResource(R.drawable.back)
+            val contentResolver: ContentResolver = requireContext().contentResolver
+
+            try {
+                val inputStream = contentResolver.openInputStream(artworkUri)
+                if (inputStream != null) {
+                    // The URI points to a valid image
+                    Glide.with(requireActivity())
+                        .load(artworkUri)
+                        .into(songPicImageView)
+                    Glide.with(requireContext())
+                        .load(artworkUri)
+                        .into(backPic)
+                } else {
+                    // The URI doesn't point to a valid image
+                    binding.songPic.setImageResource(R.drawable.headphones)
+                    binding.backImage.setImageResource(R.drawable.mountain)
+                }
+            } catch (e: Exception) {
+                // Error occurred while opening the URI
+                binding.songPic.setImageResource(R.drawable.headphones)
+                binding.backImage.setImageResource(R.drawable.mountain)
+            }
+        } else {
+            // The URI is null
             binding.songPic.setImageResource(R.drawable.headphones)
+            binding.backImage.setImageResource(R.drawable.mountain)
         }
+
     }
 
 }

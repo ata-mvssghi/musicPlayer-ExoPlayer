@@ -1,5 +1,6 @@
 package com.example.a2ndproject.adapter
 
+import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 import android.util.Log
@@ -16,11 +17,14 @@ import com.example.muiscplayerproject.PreviewFragment
 import com.example.muiscplayerproject.R
 import com.example.muiscplayerproject.databinding.MusicItemBinding
 import com.tonevellah.musicplayerapp.model.Song
+import java.lang.Exception
 
 class SongAdapter(
     var songs: List<Song?>,
     var player: ExoPlayer,
-    private val listener: OnItemClickListener)
+    private val listener: OnItemClickListener,
+    val context:Context
+            )
     :RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
 
 
@@ -34,10 +38,24 @@ class SongAdapter(
             //album art
             val albumartUri:Uri? = song.albumartUri
             if (albumartUri != null) {
-                binding.songImage.setImageURI(albumartUri)
-            }
-            else{
-                binding.songImage.setImageResource(R.drawable.music)
+                val contentResolver: ContentResolver = context.contentResolver
+
+                try {
+                    val inputStream = contentResolver.openInputStream(albumartUri)
+                    if (inputStream != null) {
+                        // The URI points to a valid image
+                        binding.songImage.setImageURI(albumartUri)
+                    } else {
+                        // The URI doesn't point to a valid image
+                        binding.songImage.setImageResource(R.drawable.headphones)
+                    }
+                } catch (e: Exception) {
+                    // Error occurred while opening the URI
+                    binding.songImage.setImageResource(R.drawable.headphones)
+                }
+            } else {
+                // The URI is null
+                binding.songImage.setImageResource(R.drawable.headphones)
             }
         }
     }
