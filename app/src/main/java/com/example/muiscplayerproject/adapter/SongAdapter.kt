@@ -28,7 +28,8 @@ class SongAdapter(
     inner class SongViewHolder(private val binding: MusicItemBinding):RecyclerView.ViewHolder(binding.root){
         fun bind(song:Song){
             binding.songName.text=song.name
-            binding.album.text=song.albumId.toString()
+            binding.album.text=song.albumName
+            binding.singer.text=song.singer
 
             //album art
             val albumartUri:Uri? = song.albumartUri

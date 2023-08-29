@@ -11,5 +11,7 @@ data class Song    //constructor
     var duration: Int,
     var size: Int,
     var albumId: Long,
-    var albumartUri: Uri?
+    var albumName:String,
+    var albumartUri: Uri?,
+    var singer:String
 )

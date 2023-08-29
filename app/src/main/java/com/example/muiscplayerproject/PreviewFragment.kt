@@ -179,7 +179,9 @@ class PreviewFragment : Fragment(), OnItemClickListener {
             MediaStore.Audio.Media.DISPLAY_NAME,
             MediaStore.Audio.Media.DURATION,
             MediaStore.Audio.Media.SIZE,
-            MediaStore.Audio.Media.ALBUM_ID
+            MediaStore.Audio.Media.ALBUM_ID,
+            MediaStore.Audio.Media.ALBUM,
+            MediaStore.Audio.Media.ARTIST
         )
 
         //sort order
@@ -196,8 +198,10 @@ class PreviewFragment : Fragment(), OnItemClickListener {
                 val durationColumn: Int =
                     cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
                 val sizeColumn: Int = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE)
-                val albumIdColumn: Int =
+                val albumIDColumn: Int =
                     cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID)
+                val  albumNameColumn:Int=cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM)
+                val singerName:Int=cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)
 
                 //getting the values
                 while (cursor.moveToNext()) {
@@ -206,7 +210,9 @@ class PreviewFragment : Fragment(), OnItemClickListener {
                     var name: String = cursor.getString(nameColumn)
                     val duration: Int = cursor.getInt(durationColumn)
                     val size: Int = cursor.getInt(sizeColumn)
-                    val albumId: Long = cursor.getLong(albumIdColumn)
+                    val albumID: Long = cursor.getLong(albumIDColumn)
+                    val albumName:String=cursor.getString(albumNameColumn)
+                    val artistName:String=cursor.getString(singerName)
 
                     //song uri
                     val uri =
@@ -215,14 +221,14 @@ class PreviewFragment : Fragment(), OnItemClickListener {
                     //album art uri
                     val albumartUri = ContentUris.withAppendedId(
                         Uri.parse("content://media/external/audio/albumart"),
-                        albumId
+                        albumID
                     )
 
                     //remove .mp3 extension on song's name
                     name = name.substring(0, name.lastIndexOf("."))
 
                     //song item
-                    val song = Song(id, uri, name, duration, size, albumId, albumartUri)
+                    val song = Song(id, uri, name, duration, size, albumID,albumName, albumartUri,artistName)
                     //add song to songs list
                     songs.add(song)
                     Log.i("music", "does these call again each time?")
