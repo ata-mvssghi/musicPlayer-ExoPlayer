@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nave_graph"
+    app:startDestination="@id/previewFragment">
+    <fragment
+        android:id="@+id/previewFragment"
+        android:name="com.example.muiscplayerproject.PreviewFragment"
+        android:label="fragment_preview"
+        tools:layout="@layout/fragment_preview" >
+        <action
+            android:id="@+id/action_previewFragment_to_player"
+            app:destination="@id/player" />
+    </fragment>
+    <fragment
+        android:id="@+id/player"
+        android:name="com.example.muiscplayerproject.Player"
+        android:label="fragment_player"
+        tools:layout="@layout/fragment_player" >
+        <action
+            android:id="@+id/action_player_to_previewFragment"
+            app:destination="@id/previewFragment" />
+    </fragment>
+</navigation>
