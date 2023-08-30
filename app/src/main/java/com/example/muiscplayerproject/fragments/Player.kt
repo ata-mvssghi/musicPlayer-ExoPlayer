@@ -195,12 +195,9 @@ class Player : Fragment() {
         val artworkUri = player.currentMediaItem?.mediaMetadata?.artworkUri
         val songPicImageView=binding.songPic
         val backPic=binding.backImage
-
         binding.name.setText(Objects.requireNonNull(player.currentMediaItem)?.mediaMetadata?.title)
-
         if (artworkUri != null) {
             val contentResolver: ContentResolver = requireContext().contentResolver
-
             try {
                 val inputStream = contentResolver.openInputStream(artworkUri)
                 if (inputStream != null) {
