@@ -6,7 +6,7 @@
     app:startDestination="@id/previewFragment">
     <fragment
         android:id="@+id/previewFragment"
-        android:name="com.example.muiscplayerproject.PreviewFragment"
+        android:name="com.example.muiscplayerproject.fragments.PreviewFragment"
         android:label="fragment_preview"
         tools:layout="@layout/fragment_preview" >
         <action
@@ -15,7 +15,7 @@
     </fragment>
     <fragment
         android:id="@+id/player"
-        android:name="com.example.muiscplayerproject.Player"
+        android:name="com.example.muiscplayerproject.fragments.Player"
         android:label="fragment_player"
         tools:layout="@layout/fragment_player" >
         <action

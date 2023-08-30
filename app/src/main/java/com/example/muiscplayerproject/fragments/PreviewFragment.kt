@@ -1,8 +1,7 @@
-package com.example.muiscplayerproject
+package com.example.muiscplayerproject.fragments
 
 import android.Manifest
 import android.content.ContentUris
-import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
@@ -12,10 +11,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.ActivityResultLauncher
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
@@ -25,10 +22,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.a2ndproject.adapter.OnItemClickListener
 import com.example.a2ndproject.adapter.SongAdapter
 import com.example.a2ndproject.sharedViewModel.SharedViewModel
+import com.example.muiscplayerproject.MainActivity
+import com.example.muiscplayerproject.R
 import com.example.muiscplayerproject.databinding.FragmentPreviewBinding
 import com.tonevellah.musicplayerapp.model.Song
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
 
 class PreviewFragment : Fragment(), OnItemClickListener {
     lateinit var binding: FragmentPreviewBinding
@@ -63,7 +60,6 @@ class PreviewFragment : Fragment(), OnItemClickListener {
         sharedViewModel.player.observe(requireActivity()) { livePlayer ->
             if (livePlayer != null) {
                 player = livePlayer
-                player.playWhenReady=true
                 Log.i("music", "player initialized in preview fragment")
             }
         }
@@ -75,7 +71,21 @@ class PreviewFragment : Fragment(), OnItemClickListener {
         fetchSongs()
         //player controls
         playerControls()
+        initiate()
         return binding.root
+
+    }
+    fun initiate(){
+        Log.i("music","initiate called")
+        if (player.playbackState!=Player.STATE_IDLE){
+            binding.currentSong.text=player.currentMediaItem?.mediaMetadata?.title
+        }
+        if(player.isPlaying){
+            binding.play.setImageResource(R.drawable.baseline_pause_circle_24)
+        }
+        else{
+            binding.play.setImageResource(R.drawable.baseline_play_circle_24)
+        }
     }
     fun playerControls() {
         binding.bottomContainer.setOnClickListener {

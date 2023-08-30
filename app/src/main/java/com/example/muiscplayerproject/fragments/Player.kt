@@ -1,4 +1,4 @@
-package com.example.muiscplayerproject
+package com.example.muiscplayerproject.fragments
 
 import android.content.ContentResolver
 import android.os.Bundle
@@ -15,6 +15,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.a2ndproject.sharedViewModel.SharedViewModel
+import com.example.muiscplayerproject.R
 import com.example.muiscplayerproject.databinding.FragmentPlayerBinding
 import java.lang.Exception
 import java.util.Objects

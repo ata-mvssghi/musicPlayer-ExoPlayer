@@ -3,17 +3,12 @@ package com.example.a2ndproject.adapter
 import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.navigation.NavController
-import androidx.navigation.Navigation
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import com.example.muiscplayerproject.PreviewFragment
 import com.example.muiscplayerproject.R
 import com.example.muiscplayerproject.databinding.MusicItemBinding
 import com.tonevellah.musicplayerapp.model.Song
