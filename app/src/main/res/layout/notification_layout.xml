@@ -2,59 +2,69 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/realative"
+    android:id="@+id/card"
     android:layout_width="250dp"
     android:layout_height="150dp"
-    android:layout_marginLeft="20dp"
+  android:layout_marginStart="20dp"
     android:background="@drawable/back">
 
-    <TextView
-        android:id="@+id/songName_notif"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="26dp"
-        android:layout_marginTop="18dp"
-        android:ellipsize="end"
-        android:maxWidth="175dp"
-        android:singleLine="true"
-        android:text="cxghsdfsdgfdgdghshdghhfhjhgtftyugy"
-        android:textColor="#45874B"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <ImageView
+            android:id="@+id/play_notif"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="104dp"
+            android:layout_marginTop="61dp"
+            app:srcCompat="@drawable/player_play" />
 
-    <ImageView
-        android:id="@+id/previous_notif"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="26dp"
-        android:layout_marginTop="56dp"
-        app:srcCompat="@drawable/player_previous" />
+        <ImageView
+            android:id="@+id/nexy_notif"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="162dp"
+            android:layout_marginTop="60dp"
+            app:srcCompat="@drawable/player_next" />
 
-    <ImageView
-        android:id="@+id/play_notif"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="88dp"
-        android:layout_marginTop="55dp"
-        app:srcCompat="@drawable/player_play" />
+        <ImageView
+            android:id="@+id/previous_notif"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="44dp"
+            android:layout_marginTop="61dp"
+            app:srcCompat="@drawable/player_previous" />
 
-    <ImageView
-        android:id="@+id/nexy_notif"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="152dp"
-        android:layout_marginTop="55dp"
-        app:srcCompat="@drawable/player_next" />
+        <TextView
+            android:id="@+id/songName_notif"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="38dp"
+            android:layout_marginTop="21dp"
+            android:ellipsize="end"
+            android:maxWidth="175dp"
+            android:singleLine="true"
+            android:text="cxghsdfsdgfdgdghshdghhfhjhgtftyugy"
+            android:textColor="#45874B"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="219dp"
+            android:layout_marginTop="4dp"
+            app:srcCompat="@drawable/crosss" />
 
 
 </RelativeLayout>

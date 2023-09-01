@@ -59,6 +59,11 @@ class Player : Fragment() {
 //            Log.i("music","music player is initialize in the plyaer frge")
 //            playerControls(player)
 //        }
+        SharedViewModel.isPaused.observe(requireActivity()) { isPAused ->
+            if(isPAused)
+                binding.playButton.setImageResource(R.drawable.player_play)
+
+        }
         gettingPlayer()
         //assign
         //back btn clicked
@@ -77,7 +82,8 @@ class Player : Fragment() {
                 Log.i("music","paho bnki da null dari")
                 player = livePlayer
                 //player controls
-
+                if(player.playbackState==Player.STATE_BUFFERING)
+                    binding.playButton.setImageResource(R.drawable.player_play)
                 playerControls(player)
 
                 executorService = Executors.newSingleThreadScheduledExecutor()

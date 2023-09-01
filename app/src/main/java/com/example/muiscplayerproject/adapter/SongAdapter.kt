@@ -86,6 +86,7 @@ class SongAdapter(
             }
             player.prepare()
             player.play()
+            SharedViewModel.Companion.isPaused.postValue(false)
           //  listener.onItemClick(position)
         }
     }

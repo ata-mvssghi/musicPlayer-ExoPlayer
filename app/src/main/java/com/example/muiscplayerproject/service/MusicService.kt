@@ -24,6 +24,7 @@ import androidx.media3.ui.PlayerNotificationManager.ACTION_PLAY
 import com.example.a2ndproject.sharedViewModel.SharedViewModel
 import com.example.muiscplayerproject.R
 import com.example.muiscplayerproject.SharedViewModelHolder
+import com.example.muiscplayerproject.broadcastReceiver.NotificationDismissReceiver
 
 //had to add this annotation hope it doesn't matter
 @UnstableApi class MusicService : Service() {
@@ -45,6 +46,18 @@ import com.example.muiscplayerproject.SharedViewModelHolder
 
         remoteViews = RemoteViews(packageName, R.layout.notification_layout)
 
+        val dismissIntent = Intent(this, NotificationDismissReceiver::class.java)
+        dismissIntent.action = "notification_dismissed_action"
+        val dismissPendingIntent = PendingIntent.getBroadcast(
+            this,
+            0,
+            dismissIntent,
+            PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+// Set the dismiss PendingIntent for your custom layout
+        remoteViews.setOnClickPendingIntent(R.id.cancel, dismissPendingIntent)
+
         player= sharedViewModel?.player?.value!!
         remoteViews.setOnClickPendingIntent(R.id.play_notif, getPendingIntent(ACTION_PLAY))
         remoteViews.setOnClickPendingIntent(R.id.previous_notif, getPendingIntent(ACTION_PREVIOUS))
@@ -54,6 +67,8 @@ import com.example.muiscplayerproject.SharedViewModelHolder
         remoteViews.setImageViewResource(R.id.previous_notif,R.drawable.player_previous)
         remoteViews.setImageViewResource(R.id.nexy_notif,R.drawable.player_next)
         remoteViews.setImageViewResource(R.id.play_notif,R.drawable.player_pause)
+        remoteViews.setImageViewResource(R.id.cancel,R.drawable.crosss)
+
 
         notification=NotificationCompat.Builder(this,"running music")
             .setSmallIcon(R.drawable.baseline_audiotrack_24)
@@ -113,6 +128,10 @@ import com.example.muiscplayerproject.SharedViewModelHolder
                        updateNotification()
                    }
                 }
+                Actions.Stop.toString()->{
+                    player.release()
+                    stopSelf()
+                }
             }
         }
 
@@ -142,7 +161,6 @@ import com.example.muiscplayerproject.SharedViewModelHolder
         remoteViews.setTextViewText(R.id.songName_notif,player.currentMediaItem?.mediaMetadata?.title)
         notification=NotificationCompat.Builder(this,"running music")
             .setSmallIcon(com.example.muiscplayerproject.R.drawable.baseline_audiotrack_24)
-            .setCustomContentView(remoteViews)
             .setCustomBigContentView(remoteViews)
             .build()
         startForeground(NOTIFICATION_ID,notification)
@@ -156,7 +174,8 @@ import com.example.muiscplayerproject.SharedViewModelHolder
 
     override fun onDestroy() {
         super.onDestroy()
-        player.release()
+        SharedViewModel.isPaused.postValue(true)
+        player.pause()
     }
 
     companion object {

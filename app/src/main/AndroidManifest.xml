@@ -26,6 +26,12 @@
             </intent-filter>
         </activity>
         <service android:name=".service.MusicService"></service>
+        <receiver android:name=".broadcastReceiver.NotificationDismissReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="notification_dismissed_action" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

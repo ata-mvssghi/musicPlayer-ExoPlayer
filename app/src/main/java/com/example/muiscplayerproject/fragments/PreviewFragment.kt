@@ -63,6 +63,11 @@ class PreviewFragment : Fragment(), OnItemClickListener {
                 Log.i("music", "player initialized in preview fragment")
             }
         }
+        SharedViewModel.isPaused.observe(requireActivity()) { isPAused ->
+            if(isPAused)
+                binding.play.setImageResource(R.drawable.baseline_play_circle_24)
+
+        }
         recyclerview = binding.recyclerView
         if (!isPermissionGranted()) {
             Log.i("music","permission not granted yet" )
