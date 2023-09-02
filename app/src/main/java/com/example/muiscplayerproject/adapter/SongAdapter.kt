@@ -22,7 +22,7 @@ class SongAdapter(
     var player: ExoPlayer,
     private val listener: OnItemClickListener,
     val context:Context,
-            )
+)
     :RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
 
 
@@ -64,7 +64,7 @@ class SongAdapter(
     }
 
     override fun getItemCount(): Int {
-      return songs.size
+        return songs.size
     }
 
     override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
@@ -86,7 +86,7 @@ class SongAdapter(
             player.prepare()
             player.play()
             SharedViewModel.isPaused.postValue(false)
-          //  listener.onItemClick(position)
+            //  listener.onItemClick(position)
         }
     }
     private fun getMediaItems(): List<MediaItem> {

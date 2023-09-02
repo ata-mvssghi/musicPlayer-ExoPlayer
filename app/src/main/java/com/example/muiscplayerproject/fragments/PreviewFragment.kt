@@ -55,7 +55,7 @@ class PreviewFragment : Fragment(), OnItemClickListener {
 //            player.playWhenReady = true // Example of using the player safely
 //            Log.i("music","player initialized in preview")
 //        }
-       // sharedViewModel = ViewModelProvider(requireActivity())[SharedViewModel::class.java]
+        // sharedViewModel = ViewModelProvider(requireActivity())[SharedViewModel::class.java]
         player= sharedViewModel.player.value!!
         sharedViewModel.player.observe(requireActivity()) { livePlayer ->
             if (livePlayer != null) {
@@ -151,7 +151,7 @@ class PreviewFragment : Fragment(), OnItemClickListener {
         player.addListener(object : Player.Listener {
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                 mediaItem?.let {
-                   binding.currentSong.text = it.mediaMetadata?.title
+                    binding.currentSong.text = it.mediaMetadata?.title
                 }
             }
 
@@ -307,7 +307,7 @@ class PreviewFragment : Fragment(), OnItemClickListener {
 //        val navHostFragment = childFragmentManager.findFragmentById(R.id.myHost) as NavHostFragment
 //        val navController = navHostFragment.navController
 //        navController.navigate(R.id.action_previewFragment_to_player)
-           findNavController().navigate(R.id.action_previewFragment_to_player)
+        findNavController().navigate(R.id.action_previewFragment_to_player)
         Log.i("music","navigated successffully")
     }
 

@@ -33,7 +33,6 @@ import com.bumptech.glide.Glide
 import com.example.a2ndproject.sharedViewModel.SharedViewModel
 import com.example.muiscplayerproject.MainActivity
 import com.example.muiscplayerproject.R
-import com.example.muiscplayerproject.SharedViewModelHolder
 import com.example.muiscplayerproject.broadcastReceiver.NotificationDismissReceiver
 import java.lang.Exception
 import androidx.media.app.NotificationCompat as MediaNotificationCompat
@@ -43,7 +42,7 @@ import androidx.media.app.NotificationCompat as MediaNotificationCompat
 
     private lateinit var notificationManager: NotificationManagerCompat
     private lateinit var notification: Notification
-     lateinit var player: ExoPlayer
+    lateinit var player: ExoPlayer
     lateinit var observer:Observer<Boolean>
     private lateinit var remoteViews:RemoteViews
     private var isPlaying = false
@@ -75,7 +74,7 @@ import androidx.media.app.NotificationCompat as MediaNotificationCompat
         player= sharedViewModel?.player?.value!!
         remoteViews.setOnClickPendingIntent(R.id.play_notif, getPendingIntent(ACTION_PLAY))
         remoteViews.setOnClickPendingIntent(R.id.previous_notif, getPendingIntent(ACTION_PREVIOUS))
-         remoteViews.setOnClickPendingIntent(R.id.nexy_notif, getPendingIntent(ACTION_NEXT))
+        remoteViews.setOnClickPendingIntent(R.id.nexy_notif, getPendingIntent(ACTION_NEXT))
 
         remoteViews.setTextViewText(R.id.songName_notif,player.currentMediaItem?.mediaMetadata?.title)
         remoteViews.setImageViewResource(R.id.previous_notif,R.drawable.player_previous)
@@ -145,7 +144,7 @@ import androidx.media.app.NotificationCompat as MediaNotificationCompat
                         remoteViews.setImageViewResource(R.id.play_notif,R.drawable.player_pause)
                         SharedViewModel.isPaused.postValue(false)
                     }
-                      updateNotification()
+                    updateNotification()
                 }
                 ACTION_PREVIOUS -> {
                     if(player.hasPreviousMediaItem()){
@@ -154,10 +153,10 @@ import androidx.media.app.NotificationCompat as MediaNotificationCompat
                     }
                 }
                 ACTION_NEXT -> {
-                   if(player.hasNextMediaItem()){
-                       player.seekToNext()
-                       updateNotification()
-                   }
+                    if(player.hasNextMediaItem()){
+                        player.seekToNext()
+                        updateNotification()
+                    }
                 }
                 MusicService.Actions.Stop.toString()->{
                     player.release()
@@ -169,8 +168,8 @@ import androidx.media.app.NotificationCompat as MediaNotificationCompat
 
         return START_STICKY
     }
-        // Update the notification based on playback state and song info
-       // updateNotification()
+    // Update the notification based on playback state and song info
+    // updateNotification()
 
 
 
@@ -197,7 +196,7 @@ import androidx.media.app.NotificationCompat as MediaNotificationCompat
                 val inputStream = contentResolver.openInputStream(artworkUri)
                 if (inputStream != null) {
                     // The URI points to a valid image
-                   remoteViews.setImageViewUri(R.id.albumPic,artworkUri)
+                    remoteViews.setImageViewUri(R.id.albumPic,artworkUri)
                 } else {
                     // The URI doesn't point to a valid image
                     remoteViews.setImageViewResource(R.id.albumPic,R.drawable.headphones)
@@ -215,7 +214,7 @@ import androidx.media.app.NotificationCompat as MediaNotificationCompat
             .setStyle( NotificationCompat.DecoratedCustomViewStyle())
             .setAutoCancel(true)
             .build()
-        startForeground(NOTIFICATION_ID,notification)
+        startForeground(1,notification)
     }
     private fun getPendingIntent(action: String): PendingIntent {
         val intent = Intent(this, MusicService::class.java)
@@ -230,8 +229,8 @@ import androidx.media.app.NotificationCompat as MediaNotificationCompat
         player.pause()
     }
 
-    companion object {
-        private const val NOTIFICATION_ID = 1
+    companion object SharedViewModelHolder {
+        var sharedViewModel: SharedViewModel? = null
     }
     enum class Actions{
         Start,Stop

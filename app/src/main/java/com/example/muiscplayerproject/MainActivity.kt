@@ -30,15 +30,15 @@ class MainActivity : AppCompatActivity() {
 
         val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
 
-
+        try{
+            player=MusicService.sharedViewModel?.player?.value!!
+        }
+        catch (e:Exception) {
             player = ExoPlayer.Builder(this).build()
             player.repeatMode = Player.REPEAT_MODE_ALL
-            sharedViewModel.setPlayer(player)
-
-
-
-
-        SharedViewModelHolder.sharedViewModel=sharedViewModel
+        }
+        sharedViewModel.setPlayer(player)
+        MusicService.sharedViewModel=sharedViewModel
 //        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.TIRAMISU){
 //           ActivityCompat.requestPermissions(
 //                this,
