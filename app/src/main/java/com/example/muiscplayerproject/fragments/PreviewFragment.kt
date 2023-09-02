@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.media3.common.MediaItem
@@ -47,15 +48,7 @@ class PreviewFragment : Fragment(), OnItemClickListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this 5fragment
         binding = FragmentPreviewBinding.inflate(inflater)
-//        sharedViewModel.player.observe(viewLifecycleOwner) { exoPlayer ->
-//            player = exoPlayer
-//            // You can use 'player' for playback control here or in other parts of the fragment
-//            player.playWhenReady = true // Example of using the player safely
-//            Log.i("music","player initialized in preview")
-//        }
-        // sharedViewModel = ViewModelProvider(requireActivity())[SharedViewModel::class.java]
         player= sharedViewModel.player.value!!
         sharedViewModel.player.observe(requireActivity()) { livePlayer ->
             if (livePlayer != null) {
@@ -96,15 +89,6 @@ class PreviewFragment : Fragment(), OnItemClickListener {
     }
     fun playerControls() {
         binding.bottomContainer.setOnClickListener {
-//           findNavController().navigate(R.id.action_previewFragment_to_player)
-
-//                val playerViewFragment = Player()
-//                val fragmentTag: String = playerViewFragment.javaClass.name
-//                (context as MainActivity).supportFragmentManager
-//                    .beginTransaction()
-//                    .replace(R.id.myHost, playerViewFragment)
-//                    .addToBackStack(fragmentTag)
-//                    .commit()
             findNavController().navigate(R.id.action_previewFragment_to_player)
 
 
@@ -141,7 +125,6 @@ class PreviewFragment : Fragment(), OnItemClickListener {
                 binding.play.setImageResource(R.drawable.baseline_pause_circle_24)
             }
         }
-
 
         //player listener
         playerListener()
@@ -189,7 +172,7 @@ class PreviewFragment : Fragment(), OnItemClickListener {
         )
 
         //sort order
-        val sortOrder = MediaStore.Audio.Media.DATE_ADDED + " DESC"
+        val sortOrder = MediaStore.Audio.Media.DATE_MODIFIED+ " DESC"
 
 
         requireContext().contentResolver.query(songLibraryUri, projection, null, null, sortOrder)
@@ -244,10 +227,6 @@ class PreviewFragment : Fragment(), OnItemClickListener {
 
     override fun onDestroy() {
         super.onDestroy()
-//        if (player.isPlaying) {
-//            player.stop()
-//        }
-//        player.release()
     }
 
     private fun showSongs(songs: List<Song>) {
@@ -295,7 +274,7 @@ class PreviewFragment : Fragment(), OnItemClickListener {
 
         if (requestCode == permissionRequestCode) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted, you can proceed with accessing external storage
+                Toast.makeText(requireContext(),"Music Player",Toast.LENGTH_SHORT).show()
             } else {
                 // Permission denied, request again
                 requestPermission()
@@ -304,11 +283,8 @@ class PreviewFragment : Fragment(), OnItemClickListener {
     }
 
     override fun onItemClick(position: Int) {
-//        val navHostFragment = childFragmentManager.findFragmentById(R.id.myHost) as NavHostFragment
-//        val navController = navHostFragment.navController
-//        navController.navigate(R.id.action_previewFragment_to_player)
         findNavController().navigate(R.id.action_previewFragment_to_player)
-        Log.i("music","navigated successffully")
+        Log.i("music","navigated successfully")
     }
 
 }

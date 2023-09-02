@@ -39,23 +39,15 @@ import androidx.media.app.NotificationCompat as MediaNotificationCompat
 
 //had to add this annotation hope it doesn't matter
 @UnstableApi class MusicService : Service() {
-
-    private lateinit var notificationManager: NotificationManagerCompat
     private lateinit var notification: Notification
     lateinit var player: ExoPlayer
-    lateinit var observer:Observer<Boolean>
     private lateinit var remoteViews:RemoteViews
-    private var isPlaying = false
-
     override fun onCreate() {
         super.onCreate()
         setUp()
 
     }
 
-    inner class MyServiceBinder : Binder() {
-        fun getService(): MusicService = this@MusicService
-    }
     fun setUp(){
         val sharedViewModel: SharedViewModel? = SharedViewModelHolder.sharedViewModel
         remoteViews = RemoteViews(packageName, R.layout.notification_layout)
@@ -68,7 +60,7 @@ import androidx.media.app.NotificationCompat as MediaNotificationCompat
             PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-// Set the dismiss PendingIntent for your custom layout
+        // Set the dismiss PendingIntent for the custom layout
         remoteViews.setOnClickPendingIntent(R.id.cancel, dismissPendingIntent)
 
         player= sharedViewModel?.player?.value!!
@@ -83,26 +75,16 @@ import androidx.media.app.NotificationCompat as MediaNotificationCompat
         remoteViews.setImageViewResource(R.id.cancel,R.drawable.crosss)
         remoteViews.setImageViewUri(R.id.albumPic,player.currentMediaItem?.mediaMetadata?.artworkUri)
 
-//        notification=NotificationCompat.Builder(this,"running music")
-//            .setSmallIcon(R.drawable.baseline_audiotrack_24)
-//            .setContentTitle(player.currentMediaItem?.mediaMetadata?.title)
-//            .setCustomBigContentView(remoteViews)
-//            .setStyle( NotificationCompat.DecoratedCustomViewStyle())
-//            .setAutoCancel(true)
-//            .build()
-//        startForeground(1,notification)
         updateNotification()
         playerControls(player)
         SharedViewModel.isPaused.observeForever() { isPAused ->
             if(isPAused){
                 remoteViews.setImageViewResource(R.id.play_notif,R.drawable.player_play)
                 updateNotification()
-                Log.i("music","1")
             }
             else {
                 remoteViews.setImageViewResource(R.id.play_notif,R.drawable.player_pause)
                 updateNotification()
-                Log.i("music","2")
             }
 
         }
@@ -125,11 +107,6 @@ import androidx.media.app.NotificationCompat as MediaNotificationCompat
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-//        val sharedViewModel: SharedViewModel? = SharedViewModelHolder.sharedViewModel
-//        player= sharedViewModel?.player?.value!!
-        // Handle the user interactions with the buttons here
-        // (play, pause, next, previous)
-
         intent?.let {
             when (it.action) {
                 ACTION_PLAY -> {
@@ -167,24 +144,6 @@ import androidx.media.app.NotificationCompat as MediaNotificationCompat
 
 
         return START_STICKY
-    }
-    // Update the notification based on playback state and song info
-    // updateNotification()
-
-
-
-
-    fun start(){
-
-    }
-
-    private fun buildNotification(): Notification {
-        // Build the notification using NotificationCompat.Builder
-        // Add play-pause-next-previous buttons and set click intents
-        // Set the notification content
-        //val notification = builder.build()
-
-        return notification
     }
 
     private fun updateNotification() {

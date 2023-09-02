@@ -36,13 +36,6 @@ class Player : Fragment() {
         Log.i("music","on create view called in player")
         // Inflate the layout for this fragment
         binding=FragmentPlayerBinding.inflate(inflater)
-
-        // sharedViewModel.player.observe(viewLifecycleOwner) { exoPlayer ->
-//            player = exoPlayer
-//            // You can use 'player' for playback control here or in other parts of the fragment
-//            player?.playWhenReady = true // Example of using the player safely
-//            Log.i("music","music player is initialize in the plyaer frge")
-//        }
         return binding.root
     }
 
@@ -52,13 +45,6 @@ class Player : Fragment() {
         //assign
         sharedViewModel = ViewModelProvider(requireActivity())[SharedViewModel::class.java]
         Log.i("music","on view created")
-//        sharedViewModel.player.observe(requireActivity()) { exoPlayer ->
-//            player = exoPlayer
-//            // You can use 'player' for playback control here or in other parts of the fragment
-//            player?.playWhenReady = true // Example of using the player safely
-//            Log.i("music","music player is initialize in the plyaer frge")
-//            playerControls(player)
-//        }
         SharedViewModel.isPaused.observe(requireActivity()) { isPAused ->
             if(isPAused)
                 binding.playButton.setImageResource(R.drawable.player_play)
@@ -67,13 +53,10 @@ class Player : Fragment() {
 
         }
         gettingPlayer()
-        //assign
         //back btn clicked
         binding.back.setOnClickListener {
             findNavController().navigate(R.id.action_player_to_previewFragment)
         }
-
-        //getting the player
 
     }
 
@@ -94,7 +77,7 @@ class Player : Fragment() {
                     0, 1, TimeUnit.SECONDS)
             }
             else{
-                Log.i("music","paho buki null di")
+                Log.i("music","the player in PLAYER fragment is null")
             }
         }
     }
@@ -112,7 +95,7 @@ class Player : Fragment() {
         }
     }
     fun playerControls(player: ExoPlayer){
-        Log.i("music","is not null the player")
+        Log.i("music","the player is not null ")
         player.addListener(object : Player.Listener{
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                 assert(mediaItem != null)
@@ -191,7 +174,6 @@ class Player : Fragment() {
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                    // Leave this empty if you don't need any action here
                 }
 
                 override fun onStopTrackingTouch(seekBar: SeekBar?) {

@@ -2,8 +2,8 @@ package com.tonevellah.musicplayerapp.model
 
 import android.net.Uri
 
-data class Song    //constructor
-    (//getters
+data class Song
+    (
     //member variables
     var id: Long,
     var uri: Uri,
