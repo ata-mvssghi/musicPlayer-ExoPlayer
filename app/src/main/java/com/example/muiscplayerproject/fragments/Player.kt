@@ -62,6 +62,8 @@ class Player : Fragment() {
         SharedViewModel.isPaused.observe(requireActivity()) { isPAused ->
             if(isPAused)
                 binding.playButton.setImageResource(R.drawable.player_play)
+            else
+                binding.playButton.setImageResource(R.drawable.player_pause)
 
         }
         gettingPlayer()
@@ -120,8 +122,10 @@ class Player : Fragment() {
                 binding.totalDuration.setText(formatTime(player.duration.toInt()))
                 binding.seekBar.setMax(player.duration.toInt())
                 binding.playButton.setImageResource(R.drawable.player_pause)
-                showCurrentArtwork()
-                updatePlayerPositionProgress()
+                if(isAdded()) {
+                    showCurrentArtwork()
+                    updatePlayerPositionProgress()
+                }
                 if (!player.isPlaying) {
                     player.play()
                 }
@@ -134,8 +138,10 @@ class Player : Fragment() {
                     binding.seekBar.setProgress(player.currentPosition.toInt())
                     binding.totalDuration.setText(formatTime(player.duration.toInt()))
                     binding.seekBar.setMax(player.duration.toInt())
-                    showCurrentArtwork()
-                    updatePlayerPositionProgress()
+                    if(isAdded()) {
+                        showCurrentArtwork()
+                        updatePlayerPositionProgress()
+                    }
                 } else {
                     binding.playButton.setImageResource(R.drawable.player_play)
                 }
@@ -169,10 +175,12 @@ class Player : Fragment() {
                 if(player.isPlaying){
                     player.pause()
                     binding.playButton.setImageResource(R.drawable.player_play)
+                    SharedViewModel.isPaused.postValue(true)
                 }
                 else {
                     player.play()
                     binding.playButton.setImageResource(R.drawable.player_pause)
+                    SharedViewModel.isPaused.postValue(false)
                 }
             }
             binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {

@@ -66,6 +66,8 @@ class PreviewFragment : Fragment(), OnItemClickListener {
         SharedViewModel.isPaused.observe(requireActivity()) { isPAused ->
             if(isPAused)
                 binding.play.setImageResource(R.drawable.baseline_play_circle_24)
+            else
+                binding.play.setImageResource(R.drawable.baseline_pause_circle_24)
 
         }
         recyclerview = binding.recyclerView
@@ -121,6 +123,7 @@ class PreviewFragment : Fragment(), OnItemClickListener {
             if (player.isPlaying) {
                 player.stop()
                 binding.play.setImageResource(R.drawable.baseline_play_circle_24)
+                SharedViewModel.isPaused.postValue(true)
             } else {
                 if (player.playbackState == Player.STATE_IDLE) {
                     // Player was stopped, prepare and start playback
@@ -134,7 +137,7 @@ class PreviewFragment : Fragment(), OnItemClickListener {
                     // Resume playback
                     player.setPlayWhenReady(true)
                 }
-
+                SharedViewModel.isPaused.postValue(false)
                 binding.play.setImageResource(R.drawable.baseline_pause_circle_24)
             }
         }

@@ -37,7 +37,6 @@ class SongAdapter(
             val albumartUri:Uri? = song.albumartUri
             if (albumartUri != null) {
                 val contentResolver: ContentResolver = context.contentResolver
-
                 try {
                     val inputStream = contentResolver.openInputStream(albumartUri)
                     if (inputStream != null) {
@@ -86,7 +85,7 @@ class SongAdapter(
             }
             player.prepare()
             player.play()
-            SharedViewModel.Companion.isPaused.postValue(false)
+            SharedViewModel.isPaused.postValue(false)
           //  listener.onItemClick(position)
         }
     }

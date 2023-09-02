@@ -1,12 +1,16 @@
 package com.example.muiscplayerproject
 
+import android.app.ActivityManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.IBinder
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContentProviderCompat.requireContext
@@ -23,12 +27,17 @@ class MainActivity : AppCompatActivity() {
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if(sharedViewModel.player.value==null)
-        player = ExoPlayer.Builder(this).build()
-        player.repeatMode = Player.REPEAT_MODE_ALL
-        // Set the player instance in the SharedViewModel
-       //val  sharedViewModel = ViewModelProvider(this)[SharedViewModel::class.java]
-        sharedViewModel.setPlayer(player)
+
+        val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+
+
+            player = ExoPlayer.Builder(this).build()
+            player.repeatMode = Player.REPEAT_MODE_ALL
+            sharedViewModel.setPlayer(player)
+
+
+
+
         SharedViewModelHolder.sharedViewModel=sharedViewModel
 //        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.TIRAMISU){
 //           ActivityCompat.requestPermissions(
@@ -50,4 +59,14 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
     }
+    fun isServiceRunning(context: Context, serviceClass: Class<*>): Boolean {
+        val manager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager?
+        for (service in manager?.getRunningServices(Integer.MAX_VALUE) ?: emptyList()) {
+            if (serviceClass.name == service.service.className) {
+                return true
+            }
+        }
+        return false
+    }
+
 }
