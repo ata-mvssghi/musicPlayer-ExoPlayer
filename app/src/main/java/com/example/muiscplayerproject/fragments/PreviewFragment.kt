@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
@@ -24,9 +25,13 @@ import com.example.a2ndproject.adapter.OnItemClickListener
 import com.example.a2ndproject.adapter.SongAdapter
 import com.example.a2ndproject.sharedViewModel.SharedViewModel
 import com.example.muiscplayerproject.MainActivity
+import com.example.muiscplayerproject.MainActivity.Companion.MyTag
 import com.example.muiscplayerproject.R
 import com.example.muiscplayerproject.databinding.FragmentPreviewBinding
 import com.tonevellah.musicplayerapp.model.Song
+import kotlinx.coroutines.launch
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 class PreviewFragment : Fragment(), OnItemClickListener {
     lateinit var binding: FragmentPreviewBinding
@@ -40,7 +45,7 @@ class PreviewFragment : Fragment(), OnItemClickListener {
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.i("music","on create called on Preview Fragment")
+        Log.i(MyTag,"on create called on Preview Fragment")
     }
 
 
@@ -50,22 +55,30 @@ class PreviewFragment : Fragment(), OnItemClickListener {
     ): View? {
         binding = FragmentPreviewBinding.inflate(inflater)
         player= sharedViewModel.player.value!!
-        sharedViewModel.player.observe(requireActivity()) { livePlayer ->
-            if (livePlayer != null) {
-                player = livePlayer
-                Log.i("music", "player initialized in preview fragment")
+        viewLifecycleOwner.lifecycleScope.launch {
+            sharedViewModel.player.collect { livePlayer ->
+                if (livePlayer != null) {
+                    player = livePlayer
+
+                    Log.i(MyTag, "Player updated in fragment")
+                }
+                else{
+                    Log.i(MyTag,"the player in preview fragment is null")
+                }
             }
         }
-        SharedViewModel.isPaused.observe(requireActivity()) { isPAused ->
-            if(isPAused)
-                binding.play.setImageResource(R.drawable.baseline_play_circle_24)
-            else
-                binding.play.setImageResource(R.drawable.baseline_pause_circle_24)
-
+        viewLifecycleOwner.lifecycleScope.launch {
+            SharedViewModel.isPaused.collect { isPaused ->
+                if (isPaused) {
+                    binding.play.setImageResource(R.drawable.baseline_play_circle_24)
+                } else {
+                    binding.play.setImageResource(R.drawable.baseline_pause_circle_24)
+                }
+            }
         }
         recyclerview = binding.recyclerView
-        if (!isPermissionGranted()) {
-            Log.i("music","permission not granted yet" )
+        if  (!isPermissionGranted()) {
+            Log.i(MyTag,"permission not granted yet" )
             requestPermission()
         }
         fetchSongs()
@@ -76,7 +89,7 @@ class PreviewFragment : Fragment(), OnItemClickListener {
 
     }
     fun initiate(){
-        Log.i("music","initiate called")
+        Log.i(MyTag,"initiate called")
         if (player.playbackState!=Player.STATE_IDLE){
             binding.currentSong.text=player.currentMediaItem?.mediaMetadata?.title
         }
@@ -107,7 +120,7 @@ class PreviewFragment : Fragment(), OnItemClickListener {
             if (player.isPlaying) {
                 player.stop()
                 binding.play.setImageResource(R.drawable.baseline_play_circle_24)
-                SharedViewModel.isPaused.postValue(true)
+                SharedViewModel.setIsPaused(true)
             } else {
                 if (player.playbackState == Player.STATE_IDLE) {
                     // Player was stopped, prepare and start playback
@@ -121,7 +134,7 @@ class PreviewFragment : Fragment(), OnItemClickListener {
                     // Resume playback
                     player.setPlayWhenReady(true)
                 }
-                SharedViewModel.isPaused.postValue(false)
+                SharedViewModel.setIsPaused(false)
                 binding.play.setImageResource(R.drawable.baseline_pause_circle_24)
             }
         }
@@ -218,7 +231,7 @@ class PreviewFragment : Fragment(), OnItemClickListener {
                     val song = Song(id, uri, name, duration, size, albumID,albumName, albumartUri,artistName)
                     //add song to songs list
                     songs.add(song)
-                    Log.i("music", "does these call again each time?")
+                    Log.i(MyTag, "does these call again each time?")
                 }
                 //show songs on rv
                 showSongs(songs)
@@ -249,7 +262,6 @@ class PreviewFragment : Fragment(), OnItemClickListener {
 
     private fun requestPermission() {
         if (shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-            // Explain to the user why the permission is needed (optional)
 
             // Request permission again
             requestPermissions(
@@ -274,17 +286,17 @@ class PreviewFragment : Fragment(), OnItemClickListener {
 
         if (requestCode == permissionRequestCode) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(requireContext(),"Music Player",Toast.LENGTH_SHORT).show()
-            } else {
+                Toast.makeText(requireContext(),"MyTag Player",Toast.LENGTH_SHORT).show()
+            }
+            else {
                 // Permission denied, request again
                 requestPermission()
             }
         }
     }
-
     override fun onItemClick(position: Int) {
         findNavController().navigate(R.id.action_previewFragment_to_player)
-        Log.i("music","navigated successfully")
+        Log.i(MyTag,"navigated successfully")
     }
 
 }

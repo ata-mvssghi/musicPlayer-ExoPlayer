@@ -49,7 +49,6 @@
             android:layout_toEndOf="@+id/albumPic"
             android:ellipsize="end"
             android:maxWidth="150dp"
-            android:fontFamily="@font/good_script"
             android:singleLine="true"
             android:text="bi ehsas shadmehr"
             android:textColor="#C243CF"

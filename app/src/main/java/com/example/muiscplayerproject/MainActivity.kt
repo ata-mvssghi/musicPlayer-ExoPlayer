@@ -25,10 +25,11 @@ class MainActivity : AppCompatActivity() {
     val sharedViewModel: SharedViewModel by lazy {
         ViewModelProvider(this)[SharedViewModel::class.java]
     }
-    override fun onCreate(savedInstanceState: Bundle?) {
+    @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
+    override fun   onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        val manager = getSystemService(ACTIVITY_SERVICE) as ActivityManager
 
         try{
             player=MusicService.sharedViewModel?.player?.value!!
@@ -51,9 +52,9 @@ class MainActivity : AppCompatActivity() {
                 "running notification",
                 NotificationManager.IMPORTANCE_HIGH
             )
-            val notificationManager=getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val notificationManager=getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
-            Log.i("music", "player got set in main activity")
+            Log.i(MyTag, "player got set in main activity")
         }
 
 
@@ -68,5 +69,7 @@ class MainActivity : AppCompatActivity() {
         }
         return false
     }
-
+    companion object{
+        const val MyTag="music"
+    }
 }

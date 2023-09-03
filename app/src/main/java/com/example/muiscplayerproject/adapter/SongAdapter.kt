@@ -26,7 +26,6 @@ class SongAdapter(
     :RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
 
 
-
     inner class SongViewHolder(private val binding: MusicItemBinding):RecyclerView.ViewHolder(binding.root){
         fun bind(song:Song){
             binding.songName.text=song.name
@@ -67,6 +66,7 @@ class SongAdapter(
         return songs.size
     }
 
+    @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
     override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
         val song = songs[position]
         songs[position]?.let { holder.bind(it) }
@@ -79,14 +79,14 @@ class SongAdapter(
             val mediaItem: MediaItem = getMediaItem(song)
             if (!player.isPlaying) {
                 player.setMediaItems(getMediaItems(), position, 0)
-            } else {
+            }
+            else {
                 player.pause()
                 player.seekTo(position, 0)
             }
             player.prepare()
             player.play()
-            SharedViewModel.isPaused.postValue(false)
-            //  listener.onItemClick(position)
+            SharedViewModel.setIsPaused(false)
         }
     }
     private fun getMediaItems(): List<MediaItem> {

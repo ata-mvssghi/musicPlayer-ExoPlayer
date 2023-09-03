@@ -5,17 +5,22 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.media3.exoplayer.ExoPlayer
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 class SharedViewModel : ViewModel() {
-    private var _player: MutableLiveData<ExoPlayer> = MutableLiveData()
-    val player: LiveData<ExoPlayer> = _player
+    private val _player: MutableStateFlow<ExoPlayer?> = MutableStateFlow(null)
+    val player: StateFlow<ExoPlayer?> = _player
 
     fun setPlayer(player: ExoPlayer) {
         _player.value = player
     }
     companion object{
-        val isPaused: MutableLiveData<Boolean> = MutableLiveData<Boolean>().apply {
-            postValue(true) // Set the initial value
+        private val _isPaused: MutableStateFlow<Boolean> = MutableStateFlow(true)
+        val isPaused: StateFlow<Boolean> = _isPaused
+
+        fun setIsPaused(paused: Boolean) {
+            _isPaused.value = paused
         }
     }
 }

@@ -9,14 +9,17 @@ import android.view.ViewGroup
 import android.widget.SeekBar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.a2ndproject.sharedViewModel.SharedViewModel
+import com.example.muiscplayerproject.MainActivity.Companion.MyTag
 import com.example.muiscplayerproject.R
 import com.example.muiscplayerproject.databinding.FragmentPlayerBinding
+import kotlinx.coroutines.launch
 import java.lang.Exception
 import java.util.Objects
 import java.util.concurrent.Executors
@@ -28,12 +31,11 @@ class Player : Fragment() {
     lateinit var binding: FragmentPlayerBinding
     lateinit var executorService: ScheduledExecutorService
     lateinit var sharedViewModel: SharedViewModel
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Log.i("music","on create view called in player")
+        Log.i(MyTag,"on create view called in player")
         // Inflate the layout for this fragment
         binding=FragmentPlayerBinding.inflate(inflater)
         return binding.root
@@ -44,13 +46,15 @@ class Player : Fragment() {
 
         //assign
         sharedViewModel = ViewModelProvider(requireActivity())[SharedViewModel::class.java]
-        Log.i("music","on view created")
-        SharedViewModel.isPaused.observe(requireActivity()) { isPAused ->
-            if(isPAused)
-                binding.playButton.setImageResource(R.drawable.player_play)
-            else
-                binding.playButton.setImageResource(R.drawable.player_pause)
-
+        Log.i(MyTag,"on view created")
+        viewLifecycleOwner.lifecycleScope.launch {
+            SharedViewModel.isPaused.collect { isPaused ->
+                if (isPaused) {
+                    binding.playButton.setImageResource(R.drawable.player_play)
+                } else {
+                    binding.playButton.setImageResource(R.drawable.player_pause)
+                }
+            }
         }
         gettingPlayer()
         //back btn clicked
@@ -62,22 +66,24 @@ class Player : Fragment() {
 
 
     private fun gettingPlayer() {
-        sharedViewModel.player.observe(requireActivity()) { livePlayer ->
-            if (livePlayer != null) {
-                Log.i("music","paho bnki da null dari")
-                player = livePlayer
-                //player controls
-                if(player.playbackState==Player.STATE_BUFFERING)
-                    binding.playButton.setImageResource(R.drawable.player_play)
-                playerControls(player)
+        viewLifecycleOwner.lifecycleScope.launch {
+            sharedViewModel.player.collect { livePlayer ->
+                if (livePlayer != null) {
+                    player = livePlayer
+                    if(player.playbackState==Player.STATE_BUFFERING)
+                        binding.playButton.setImageResource(R.drawable.player_play)
+                    playerControls(player)
 
-                executorService = Executors.newSingleThreadScheduledExecutor()
-                executorService.scheduleAtFixedRate(
-                    { updatePlayerPositionProgress() },
-                    0, 1, TimeUnit.SECONDS)
-            }
-            else{
-                Log.i("music","the player in PLAYER fragment is null")
+                    executorService = Executors.newSingleThreadScheduledExecutor()
+                    executorService.scheduleAtFixedRate(
+                        { updatePlayerPositionProgress() },
+                        0, 1, TimeUnit.SECONDS)
+
+                    Log.i(MyTag, "Player updated in fragment")
+                }
+                else{
+                    Log.i(MyTag,"the player in PLAYER fragment is null")
+                }
             }
         }
     }
@@ -93,18 +99,22 @@ class Player : Fragment() {
                 binding.seekBar.progress = player.currentPosition.toInt()
             }
         }
+
     }
     fun playerControls(player: ExoPlayer){
-        Log.i("music","the player is not null ")
+        Log.i(MyTag,"the player is not null ")
         player.addListener(object : Player.Listener{
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                 assert(mediaItem != null)
-                binding.name.setText(mediaItem!!.mediaMetadata.title)
+                val title=mediaItem?.mediaMetadata?.title ?:"<UNTITLED SONG>"
+                binding.name.setText(title)
                 binding.currentDuration.setText(formatTime(player.currentPosition.toInt()))
                 binding.seekBar.setProgress(player.currentPosition.toInt())
                 binding.totalDuration.setText(formatTime(player.duration.toInt()))
                 binding.seekBar.setMax(player.duration.toInt())
                 binding.playButton.setImageResource(R.drawable.player_pause)
+                //checking for if the fragment is attached to any context or not to prevent issues relateed
+                // to context calls
                 if(isAdded()) {
                     showCurrentArtwork()
                     updatePlayerPositionProgress()
@@ -158,12 +168,12 @@ class Player : Fragment() {
                 if(player.isPlaying){
                     player.pause()
                     binding.playButton.setImageResource(R.drawable.player_play)
-                    SharedViewModel.isPaused.postValue(true)
+                    SharedViewModel.setIsPaused(true)
                 }
                 else {
                     player.play()
                     binding.playButton.setImageResource(R.drawable.player_pause)
-                    SharedViewModel.isPaused.postValue(false)
+                    SharedViewModel.setIsPaused(false)
                 }
             }
             binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {

@@ -21,5 +21,9 @@
         <action
             android:id="@+id/action_player_to_previewFragment"
             app:destination="@id/previewFragment" />
+        <argument
+            android:name="singerName"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
 </navigation>

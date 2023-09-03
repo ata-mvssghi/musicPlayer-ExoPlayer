@@ -18,12 +18,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:alpha="0.2"
-            android:src="@drawable/back"
             android:scaleType="centerCrop"
+            android:src="@drawable/back"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
 
         <ImageView
             android:id="@+id/back"
@@ -53,10 +55,13 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="52dp"
             android:layout_marginTop="16dp"
-            android:text="TextView"
+            android:text="dfsgfhfddfsadsfhfgdsadfghfdsaSDFGHJG SFGFFGS "
             android:textColor="@color/white"
             android:textSize="18dp"
-            android:fontFamily="@font/bangers_regular"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:maxWidth="300dp"
+            android:fontFamily="@font/good_script"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/songPic" />
@@ -125,5 +130,6 @@
             android:textSize="10sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/seekBar" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
