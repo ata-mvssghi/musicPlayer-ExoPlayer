@@ -1,6 +1,7 @@
 package com.example.muiscplayerproject.fragments
 
 import android.content.ContentResolver
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -32,6 +33,10 @@ class Player : Fragment() {
     lateinit var binding: FragmentPlayerBinding
     lateinit var executorService: ScheduledExecutorService
     lateinit var sharedViewModel: SharedViewModel
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        getActivity()?.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -104,6 +109,7 @@ class Player : Fragment() {
     fun playerControls(player: ExoPlayer){
         Log.i(MyTag,"the player is not null ")
         player.addListener(object : Player.Listener{
+            //it's ok
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                 assert(mediaItem != null)
                 val title=mediaItem?.mediaMetadata?.title ?:"<UNTITLED SONG>"
@@ -117,6 +123,7 @@ class Player : Fragment() {
                 // to context calls
                 if(isAdded()) {
                     showCurrentArtwork()
+                    Log.i(MyTag,"on media item transition called")
                     updatePlayerPositionProgress()
                 }
                 if (!player.isPlaying) {
@@ -133,6 +140,7 @@ class Player : Fragment() {
                     binding.seekBar.setMax(player.duration.toInt())
                     if(isAdded()) {
                         showCurrentArtwork()
+                        Log.i(MyTag,"on play back state changed")
                         updatePlayerPositionProgress()
                     }
                 } else {
@@ -146,10 +154,11 @@ class Player : Fragment() {
             binding.seekBar.setProgress(player.currentPosition.toInt())
             binding.totalDuration.setText(formatTime(player.duration.toInt()))
             binding.seekBar.setMax(player.duration.toInt())
-            binding.playButton.setImageResource(R.drawable.player_pause)
+            //binding.playButton.setImageResource(R.drawable.player_pause)
             showCurrentArtwork()
             updatePlayerPositionProgress()
             binding.nextButton.setOnClickListener {
+                Log.i(MyTag,"listener of next")
                 if(player.hasNextMediaItem()){
                     player.seekToNext()
                     showCurrentArtwork()
@@ -167,10 +176,12 @@ class Player : Fragment() {
                 if(player.isPlaying){
                     player.pause()
                     binding.playButton.setImageResource(R.drawable.player_play)
+                    Log.i(MyTag,"122")
                     SharedViewModel.setIsPaused(true)
                 }
                 else {
                     player.play()
+                    Log.i(MyTag,"123")
                     binding.playButton.setImageResource(R.drawable.player_pause)
                     SharedViewModel.setIsPaused(false)
                 }
@@ -229,6 +240,11 @@ class Player : Fragment() {
             binding.backImage.setImageResource(R.drawable.mountain)
         }
 
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        getActivity()?.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     }
 
 }

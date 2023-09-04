@@ -133,10 +133,11 @@ class PreviewFragment : Fragment(), OnItemClickListener {
         binding.play.setOnClickListener {
             if(initializedPlaying) {
                 if (player.isPlaying) {
-                    player.stop()
+                    player.pause()
                     binding.play.setImageResource(R.drawable.baseline_play_circle_24)
                     SharedViewModel.setIsPaused(true)
-                } else {
+                }
+                else {
                     if (player.playbackState == Player.STATE_IDLE) {
                         // Player was stopped, prepare and start playback
                         player.setPlayWhenReady(true)
