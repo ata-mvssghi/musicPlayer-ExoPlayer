@@ -70,6 +70,7 @@ class Player : Fragment() {
             sharedViewModel.player.collect { livePlayer ->
                 if (livePlayer != null) {
                     player = livePlayer
+                    Log.i(MyTag,"player got set in player  fragment")
                     if(player.playbackState==Player.STATE_BUFFERING)
                         binding.playButton.setImageResource(R.drawable.player_play)
                     playerControls(player)
@@ -194,6 +195,7 @@ class Player : Fragment() {
             })
 
         }
+
 
     }
 

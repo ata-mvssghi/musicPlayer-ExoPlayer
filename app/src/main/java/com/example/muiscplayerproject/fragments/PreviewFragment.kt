@@ -60,7 +60,7 @@ class PreviewFragment : Fragment(), OnItemClickListener {
                 if (livePlayer != null) {
                     player = livePlayer
 
-                    Log.i(MyTag, "Player updated in fragment")
+                    Log.i(MyTag, "Player updated in  preview fragment")
                 }
                 else{
                     Log.i(MyTag,"the player in preview fragment is null")
