@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.SeekBar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -79,8 +80,6 @@ class Player : Fragment() {
                     executorService.scheduleAtFixedRate(
                         { updatePlayerPositionProgress() },
                         0, 1, TimeUnit.SECONDS)
-
-                    Log.i(MyTag, "Player updated in fragment")
                 }
                 else{
                     Log.i(MyTag,"the player in PLAYER fragment is null")
@@ -142,7 +141,6 @@ class Player : Fragment() {
             }
         })
         //checking if the player is playing
-        if (player.isPlaying) {
             binding.name.setText(Objects.requireNonNull(player.currentMediaItem)?.mediaMetadata?.title)
             binding.currentDuration.setText(formatTime(player.currentPosition.toInt()))
             binding.seekBar.setProgress(player.currentPosition.toInt())
@@ -194,7 +192,6 @@ class Player : Fragment() {
                 }
             })
 
-        }
 
 
     }

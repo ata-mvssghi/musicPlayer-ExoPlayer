@@ -20,10 +20,12 @@ import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.a2ndproject.adapter.OnItemClickListener
 import com.example.a2ndproject.adapter.SongAdapter
 import com.example.a2ndproject.sharedViewModel.SharedViewModel
+import com.example.a2ndproject.sharedViewModel.SharedViewModel.Companion.initializedPlaying
 import com.example.muiscplayerproject.MainActivity
 import com.example.muiscplayerproject.MainActivity.Companion.MyTag
 import com.example.muiscplayerproject.R
@@ -77,14 +79,17 @@ class PreviewFragment : Fragment(), OnItemClickListener {
             }
         }
         recyclerview = binding.recyclerView
+        //checking if the permission is already given or not
         if  (!isPermissionGranted()) {
             Log.i(MyTag,"permission not granted yet" )
             requestPermission()
         }
-        fetchSongs()
-        //player controls
-        playerControls()
-        initiate()
+        else{
+            fetchSongs()
+            //player controls
+            playerControls()
+            initiate()
+        }
         return binding.root
 
     }
@@ -102,41 +107,54 @@ class PreviewFragment : Fragment(), OnItemClickListener {
     }
     fun playerControls() {
         binding.bottomContainer.setOnClickListener {
-            findNavController().navigate(R.id.action_previewFragment_to_player)
-
-
+            if(initializedPlaying)
+                findNavController().navigate(R.id.action_previewFragment_to_player)
+            else
+                Toast.makeText(requireContext(),"Please Select A Song",Toast.LENGTH_SHORT).show()
         }
         binding.next.setOnClickListener {
-            if (player.hasNextMediaItem()) {
-                player.seekToNext()
+            if(initializedPlaying) {
+                if (player.hasNextMediaItem()) {
+                    player.seekToNext()
+                }
             }
+            else
+                Toast.makeText(requireContext(),"Please Select A Song",Toast.LENGTH_SHORT).show()
         }
         binding.previous.setOnClickListener {
-            if (player.hasPreviousMediaItem()) {
-                player.seekToPrevious()
+            if(initializedPlaying) {
+                if (player.hasPreviousMediaItem()) {
+                    player.seekToPrevious()
+                }
             }
+            else
+                Toast.makeText(requireContext(),"Please Select A Song",Toast.LENGTH_SHORT).show()
         }
         binding.play.setOnClickListener {
-            if (player.isPlaying) {
-                player.stop()
-                binding.play.setImageResource(R.drawable.baseline_play_circle_24)
-                SharedViewModel.setIsPaused(true)
-            } else {
-                if (player.playbackState == Player.STATE_IDLE) {
-                    // Player was stopped, prepare and start playback
-                    player.setPlayWhenReady(true)
-                    player.prepare()
-                } else if (player.playbackState == Player.STATE_ENDED) {
-                    // Player finished playing, seek to the beginning and start again
-                    player.seekToDefaultPosition()
-                    player.setPlayWhenReady(true)
+            if(initializedPlaying) {
+                if (player.isPlaying) {
+                    player.stop()
+                    binding.play.setImageResource(R.drawable.baseline_play_circle_24)
+                    SharedViewModel.setIsPaused(true)
                 } else {
-                    // Resume playback
-                    player.setPlayWhenReady(true)
+                    if (player.playbackState == Player.STATE_IDLE) {
+                        // Player was stopped, prepare and start playback
+                        player.setPlayWhenReady(true)
+                        player.prepare()
+                    } else if (player.playbackState == Player.STATE_ENDED) {
+                        // Player finished playing, seek to the beginning and start again
+                        player.seekToDefaultPosition()
+                        player.setPlayWhenReady(true)
+                    } else {
+                        // Resume playback
+                        player.setPlayWhenReady(true)
+                    }
+                    SharedViewModel.setIsPaused(false)
+                    binding.play.setImageResource(R.drawable.baseline_pause_circle_24)
                 }
-                SharedViewModel.setIsPaused(false)
-                binding.play.setImageResource(R.drawable.baseline_pause_circle_24)
             }
+            else
+                Toast.makeText(requireContext(),"Please Select A Song",Toast.LENGTH_SHORT).show()
         }
 
         //player listener
@@ -245,7 +263,8 @@ class PreviewFragment : Fragment(), OnItemClickListener {
     private fun showSongs(songs: List<Song>) {
         //layout manager
         //LinearLayoutManager layoutManager = new LigridSpanSizenearLayoutManager(this);
-        val layoutManager = GridLayoutManager(requireContext(), 1)
+        val layoutManager = LinearLayoutManager(requireContext())
+        layoutManager.orientation=LinearLayoutManager.VERTICAL
         recyclerview.setLayoutManager(layoutManager)
 
         adapter = SongAdapter(songs, player, this,requireContext())
@@ -286,7 +305,11 @@ class PreviewFragment : Fragment(), OnItemClickListener {
 
         if (requestCode == permissionRequestCode) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(requireContext(),"MyTag Player",Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(),"WELCOME!",Toast.LENGTH_SHORT).show()
+                fetchSongs()
+                //player controls
+                playerControls()
+                initiate()
             }
             else {
                 // Permission denied, request again

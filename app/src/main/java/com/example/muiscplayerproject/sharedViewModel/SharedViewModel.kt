@@ -22,5 +22,11 @@ class SharedViewModel : ViewModel() {
         fun setIsPaused(paused: Boolean) {
             _isPaused.value = paused
         }
+         var  initializedPlaying:Boolean=false
+        private val _permissionGranted: MutableStateFlow<Boolean> = MutableStateFlow(false)
+        val permissionGranted: StateFlow<Boolean> = _permissionGranted
+        fun setPermissionGranted(granted:Boolean){
+            _permissionGranted.value=granted
+        }
     }
 }

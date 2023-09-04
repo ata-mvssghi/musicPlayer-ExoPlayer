@@ -81,17 +81,17 @@ import androidx.media.app.NotificationCompat as MediaNotificationCompat
         remoteViews.setImageViewResource(R.id.cancel,R.drawable.crosss)
         remoteViews.setImageViewUri(R.id.albumPic,player.currentMediaItem?.mediaMetadata?.artworkUri)
 
-        updateNotification(false)
+        updateNotification()
         playerControls(player)
         CoroutineScope(Dispatchers.Main).launch {
             SharedViewModel.isPaused.collect { isPaused ->
                 if(isPaused){
                     remoteViews.setImageViewResource(R.id.play_notif,R.drawable.player_play)
-                    updateNotification(true)
+                    updateNotification()
                 }
                 else {
                     remoteViews.setImageViewResource(R.id.play_notif,R.drawable.player_pause)
-                    updateNotification(true)
+                    updateNotification()
                 }
             }
         }
@@ -105,7 +105,7 @@ import androidx.media.app.NotificationCompat as MediaNotificationCompat
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                 super.onMediaItemTransition(mediaItem, reason)
                 remoteViews.setImageViewResource(R.id.play_notif,R.drawable.player_pause)
-                updateNotification(true)
+                updateNotification()
             }
 
         })
@@ -128,18 +128,18 @@ import androidx.media.app.NotificationCompat as MediaNotificationCompat
                         remoteViews.setImageViewResource(R.id.play_notif,R.drawable.player_pause)
                         SharedViewModel.setIsPaused(false)
                     }
-                    updateNotification(true)
+                    updateNotification()
                 }
                 ACTION_PREVIOUS -> {
                     if(player.hasPreviousMediaItem()){
                         player.seekToPrevious()
-                        updateNotification(true)
+                        updateNotification()
                     }
                 }
                 ACTION_NEXT -> {
                     if(player.hasNextMediaItem()){
                         player.seekToNext()
-                        updateNotification(true)
+                        updateNotification()
                     }
                 }
                 MusicService.Actions.Stop.toString()->{
@@ -153,7 +153,7 @@ import androidx.media.app.NotificationCompat as MediaNotificationCompat
         return START_STICKY
     }
 
-    private fun updateNotification( alreadyExistsNotification:Boolean) {
+    private fun updateNotification() {
         remoteViews.setTextViewText(R.id.songName_notif,player.currentMediaItem?.mediaMetadata?.title)
         val artworkUri = player.currentMediaItem?.mediaMetadata?.artworkUri
         if (artworkUri != null) {
@@ -182,19 +182,7 @@ import androidx.media.app.NotificationCompat as MediaNotificationCompat
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .build()
-        if(alreadyExistsNotification){
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
-                // The app has the required notification permission.
-                val updatedNotification = notification
-                val notificationManager = NotificationManagerCompat.from(this)
-                notificationManager.notify(1, updatedNotification)
-                Log.i(MyTag,"notification updated rather restarting")
-            }
-        }
-        else{
         startForeground(1,notification)
-            Log.i(MyTag,"notification created as the first time")
-        }
     }
     private fun getPendingIntent(action: String): PendingIntent {
         val intent = Intent(this, MusicService::class.java)
