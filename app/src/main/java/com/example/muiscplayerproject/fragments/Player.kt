@@ -99,10 +99,8 @@ class Player : Fragment() {
     }
     fun updatePlayerPositionProgress() {
         requireActivity().runOnUiThread {
-            if (player.isPlaying) {
                 binding.currentDuration.text = formatTime(player.currentPosition.toInt())
                 binding.seekBar.progress = player.currentPosition.toInt()
-            }
         }
 
     }
@@ -133,7 +131,10 @@ class Player : Fragment() {
             override fun onPlaybackStateChanged(playbackState: Int) {
                 if (playbackState == ExoPlayer.STATE_READY) {
                     binding.name.setText(Objects.requireNonNull(player.currentMediaItem)?.mediaMetadata?.title)
-                    binding.playButton.setImageResource(R.drawable.player_pause)
+                    if(player.isPlaying)
+                        binding.playButton.setImageResource(R.drawable.player_pause)
+                    else
+                        binding.playButton.setImageResource(R.drawable.player_play)
                     binding.currentDuration.setText(formatTime(player.currentPosition.toInt()))
                     binding.seekBar.setProgress(player.currentPosition.toInt())
                     binding.totalDuration.setText(formatTime(player.duration.toInt()))
@@ -190,6 +191,7 @@ class Player : Fragment() {
                 private var progressValue = 0
 
                 override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                    Log.i(MyTag,"on progress changed")
                     progressValue = progress
                 }
 
@@ -197,6 +199,7 @@ class Player : Fragment() {
                 }
 
                 override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                    Log.i(MyTag,"on stop tracking")
                     seekBar?.progress = progressValue
                     binding.currentDuration.text = formatTime(progressValue)
                     player.seekTo(progressValue.toLong())
