@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace 'com.example.muiscplayerproject'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.example.muiscplayerproject"
@@ -61,6 +61,6 @@ dependencies {
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
-
+    implementation "androidx.core:core-splashscreen:1.1.0-alpha02"
 
 }

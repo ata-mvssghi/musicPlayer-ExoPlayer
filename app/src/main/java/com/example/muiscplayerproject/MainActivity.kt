@@ -1,26 +1,20 @@
 package com.example.muiscplayerproject
 
-import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.Context
-import android.content.pm.PackageManager
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.util.AttributeSet
+import android.os.Handler
 import android.util.Log
-import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.ViewModelProvider
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import com.example.a2ndproject.sharedViewModel.SharedViewModel
-import com.example.a2ndproject.sharedViewModel.SharedViewModel.Companion.permissionGranted
 import com.example.muiscplayerproject.service.MusicService
-import kotlinx.coroutines.sync.Semaphore
-import java.util.Objects
+
 
 class MainActivity : AppCompatActivity() {
     lateinit var player:ExoPlayer
@@ -30,6 +24,7 @@ class MainActivity : AppCompatActivity() {
     @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
     override fun   onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        installSplashScreen()
         try{
             player=MusicService.sharedViewModel?.player?.value!!
         }
@@ -39,17 +34,11 @@ class MainActivity : AppCompatActivity() {
         }
         sharedViewModel.setPlayer(player)
         MusicService.sharedViewModel=sharedViewModel
-//        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.TIRAMISU){
-//           ActivityCompat.requestPermissions(
-//                this,
-//                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-//           0)
-//        }
         if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 "running music",
                 "running notification",
-                NotificationManager.IMPORTANCE_HIGH
+                NotificationManager.IMPORTANCE_LOW
             )
             val notificationManager=getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
