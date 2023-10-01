@@ -11,7 +11,11 @@
         tools:layout="@layout/fragment_preview" >
         <action
             android:id="@+id/action_previewFragment_to_player"
+            app:enterAnim="@anim/slide_in_right"
             app:destination="@id/player" />
+        <action
+            android:id="@+id/action_previewFragment_to_favoriteFragment"
+            app:destination="@id/favoriteFragment" />
     </fragment>
     <fragment
         android:id="@+id/player"
@@ -20,10 +24,21 @@
         tools:layout="@layout/fragment_player" >
         <action
             android:id="@+id/action_player_to_previewFragment"
-            app:destination="@id/previewFragment" />
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_out_left"
+            app:popExitAnim="@anim/slide_in_left"
+            app:destination="@id/previewFragment"
+
+            />
         <argument
             android:name="singerName"
             app:argType="string"
             app:nullable="true" />
     </fragment>
+    <fragment
+        android:id="@+id/favoriteFragment"
+        android:name="com.example.muiscplayerproject.fragments.FavoriteFragment"
+        android:label="fragment_favorite"
+        tools:layout="@layout/fragment_favorite" />
 </navigation>

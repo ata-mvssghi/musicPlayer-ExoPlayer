@@ -65,9 +65,9 @@ class Player : Fragment() {
         gettingPlayer()
         //back btn clicked
         binding.back.setOnClickListener {
-            findNavController().navigate(R.id.action_player_to_previewFragment)
+            Log.i("music","back to preview fragment")
+            findNavController().popBackStack()
         }
-
     }
 
 

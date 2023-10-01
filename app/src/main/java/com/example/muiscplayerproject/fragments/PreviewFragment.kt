@@ -18,7 +18,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -48,6 +50,7 @@ class PreviewFragment : Fragment(), OnItemClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.i(MyTag,"on create called on Preview Fragment")
+
     }
 
 
@@ -56,6 +59,21 @@ class PreviewFragment : Fragment(), OnItemClickListener {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentPreviewBinding.inflate(inflater)
+        val navController = NavHostFragment.findNavController(this)
+        val bottomNavigationView=binding.bottomNavigationView
+       // bottomNavigationView.selectedItemId=R.id.songs
+        bottomNavigationView.setOnNavigationItemSelectedListener{item ->
+            when(item.itemId){
+                R.id.songs->{
+                    true
+                }
+                R.id.favorites->{
+                    navController.navigate(R.id.action_previewFragment_to_favoriteFragment)
+                    true
+                }
+                else->false
+            }
+        }
         player= sharedViewModel.player.value!!
         viewLifecycleOwner.lifecycleScope.launch {
             sharedViewModel.player.collect { livePlayer ->
