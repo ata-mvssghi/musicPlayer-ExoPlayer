@@ -8,11 +8,13 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.recyclerview.widget.RecyclerView
 import com.example.a2ndproject.sharedViewModel.SharedViewModel
 import com.example.muiscplayerproject.R
 import com.example.muiscplayerproject.databinding.MusicItemBinding
+import com.example.muiscplayerproject.fragments.PreviewFragment.playingSong.currentSong
 import com.example.muiscplayerproject.service.MusicService
 import com.tonevellah.musicplayerapp.model.Song
 import java.lang.Exception
@@ -20,7 +22,6 @@ import java.lang.Exception
 class SongAdapter(
     var songs: List<Song?>,
     var player: ExoPlayer,
-    private val listener: OnItemClickListener,
     val context:Context,
 )
     :RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
@@ -75,8 +76,8 @@ class SongAdapter(
                 it.action=MusicService.Actions.Start.toString()
                 context.startService(it)
             }
+           currentSong= songs.get(position)!!
             //media item
-            val mediaItem: MediaItem = getMediaItem(song)
             if (!player.isPlaying) {
                 player.setMediaItems(getMediaItems(), position, 0)
             }
@@ -110,11 +111,9 @@ class SongAdapter(
     private fun getMetadata(song: Song?): MediaMetadata {
         return MediaMetadata.Builder()
             .setTitle(song?.name)
+            .setAlbumArtist(song?.singer)
             .setArtworkUri(song?.albumartUri)
             .build()
     }
 
-}
-interface OnItemClickListener {
-    fun onItemClick(position: Int)
 }

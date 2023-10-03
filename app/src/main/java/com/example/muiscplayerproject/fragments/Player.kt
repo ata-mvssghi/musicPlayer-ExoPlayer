@@ -2,40 +2,70 @@ package com.example.muiscplayerproject.fragments
 
 import android.content.ContentResolver
 import android.content.pm.ActivityInfo
+import android.net.Uri
 import android.os.Bundle
+import android.text.BoringLayout
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.SeekBar
+import android.widget.Toast
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.example.a2ndproject.sharedViewModel.SharedViewModel
+import com.example.muiscplayerproject.MainActivity
 import com.example.muiscplayerproject.MainActivity.Companion.MyTag
 import com.example.muiscplayerproject.R
 import com.example.muiscplayerproject.databinding.FragmentPlayerBinding
+import com.example.muiscplayerproject.fragments.Player.playerSong.playerCurrentSong
+import com.example.muiscplayerproject.fragments.PreviewFragment.playingSong.currentSong
+import com.example.muiscplayerproject.room.MusicDao
+import com.example.muiscplayerproject.room.MusicDatabase
+import com.example.muiscplayerproject.room.SongEntity
+import com.tonevellah.musicplayerapp.model.Song
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.lang.Exception
 import java.util.Objects
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
+import kotlin.properties.Delegates
 
 class Player : Fragment() {
     lateinit var player: ExoPlayer
     lateinit var binding: FragmentPlayerBinding
     lateinit var executorService: ScheduledExecutorService
     lateinit var sharedViewModel: SharedViewModel
+    lateinit var db:MusicDatabase
+    lateinit var dao: MusicDao
+    private val _isBooleanLiveData = MutableLiveData<Boolean>()
+    val isBooleanLiveData: LiveData<Boolean> get() = _isBooleanLiveData
+    object  playerSong{
+        lateinit var playerCurrentSong:Song
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.i(MyTag,"recreated!!!!!!!!!!!!!!111 the player")
         getActivity()?.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        db=(activity as MainActivity).db
+        dao=db.dao
     }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,7 +79,6 @@ class Player : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         //assign
         sharedViewModel = ViewModelProvider(requireActivity())[SharedViewModel::class.java]
         Log.i(MyTag,"on view created")
@@ -68,7 +97,37 @@ class Player : Fragment() {
             Log.i("music","back to preview fragment")
             findNavController().popBackStack()
         }
+
+        var exists=false
+        CoroutineScope(Dispatchers.IO).launch {
+            if(dao.doesSongNameExist(playerCurrentSong.name)>0){
+            Log.i("music","exists!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            exists=true
+            }
+            withContext(Dispatchers.Main){
+                if(exists){
+                    binding.saveImage.setImageResource(R.drawable.favortie)
+                    Log.i("music ","paho")
+                    updateBooleanValue(true)
+                }
+                else{
+                    binding.saveImage.setImageResource(R.drawable.favorite_border)
+                    updateBooleanValue(false)
+                }
+            }
+        }
+        isBooleanLiveData.observe(viewLifecycleOwner , Observer {
+            newValue->
+            if(newValue){
+                binding.saveImage.setImageResource(R.drawable.favortie)
+            }
+            else{
+                binding.saveImage.setImageResource(R.drawable.favorite_border)
+            }
+        })
+
     }
+
 
 
     private fun gettingPlayer() {
@@ -112,6 +171,7 @@ class Player : Fragment() {
                 assert(mediaItem != null)
                 val title=mediaItem?.mediaMetadata?.title ?:"<UNTITLED SONG>"
                 binding.name.setText(title)
+                binding.singerPlayer.setText(mediaItem?.mediaMetadata?.albumArtist)
                 binding.currentDuration.setText(formatTime(player.currentPosition.toInt()))
                 binding.seekBar.setProgress(player.currentPosition.toInt())
                 binding.totalDuration.setText(formatTime(player.duration.toInt()))
@@ -127,10 +187,12 @@ class Player : Fragment() {
                 if (!player.isPlaying) {
                     player.play()
                 }
+                updateCurrentSong()
             }
             override fun onPlaybackStateChanged(playbackState: Int) {
                 if (playbackState == ExoPlayer.STATE_READY) {
                     binding.name.setText(Objects.requireNonNull(player.currentMediaItem)?.mediaMetadata?.title)
+                    binding.singerPlayer.setText(Objects.requireNonNull(player.currentMediaItem)?.mediaMetadata?.albumArtist)
                     if(player.isPlaying)
                         binding.playButton.setImageResource(R.drawable.player_pause)
                     else
@@ -151,6 +213,7 @@ class Player : Fragment() {
         })
         //checking if the player is playing
             binding.name.setText(Objects.requireNonNull(player.currentMediaItem)?.mediaMetadata?.title)
+            binding.singerPlayer.setText(Objects.requireNonNull(player.currentMediaItem)?.mediaMetadata?.albumArtist)
             binding.currentDuration.setText(formatTime(player.currentPosition.toInt()))
             binding.seekBar.setProgress(player.currentPosition.toInt())
             binding.totalDuration.setText(formatTime(player.duration.toInt()))
@@ -164,6 +227,8 @@ class Player : Fragment() {
                     player.seekToNext()
                     showCurrentArtwork()
                     updatePlayerPositionProgress()
+                    updateCurrentSong()
+
                 }
             }
             binding.previousButton.setOnClickListener {
@@ -171,6 +236,7 @@ class Player : Fragment() {
                     player.seekToPrevious()
                     showCurrentArtwork()
                     updatePlayerPositionProgress()
+                    updateCurrentSong()
                 }
             }
             binding.playButton.setOnClickListener {
@@ -206,6 +272,53 @@ class Player : Fragment() {
                 }
             })
 
+            binding.saveImage.setOnClickListener {
+                var exists = false
+                runBlocking {
+                CoroutineScope(Dispatchers.IO).launch {
+                    if (dao.doesSongNameExist(playerCurrentSong.name) > 0) {
+                       exists = true
+                        Log.i(MyTag, "exists!")
+                    }
+                    if (exists) {
+                        dao.deleteSongByName(playerCurrentSong.name)
+                        withContext(Dispatchers.Main){
+                            Toast.makeText(
+                                requireContext(),
+                                "Song Deleted From Favorites List!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            updateBooleanValue(false)
+                        }
+                    }
+                    else {
+                        withContext(Dispatchers.Main){
+                            Toast.makeText(
+                                requireContext(),
+                                "Song Added to the favorites list successfully!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            updateBooleanValue(true)
+                        }
+                        val newEntity = SongEntity(
+                            playerCurrentSong.id.toInt(),
+                            playerCurrentSong.uri,
+                            playerCurrentSong.name,
+                            playerCurrentSong.albumartUri,
+                            playerCurrentSong.singer
+                        )
+                        CoroutineScope(Dispatchers.Default).launch {
+                            dao.insertSongToFavorites(
+                                newEntity
+                            )
+                        }
+                    }
+
+                }
+            }
+
+            }
+
 
 
     }
@@ -215,6 +328,7 @@ class Player : Fragment() {
         val songPicImageView=binding.songPic
         val backPic=binding.backImage
         binding.name.setText(Objects.requireNonNull(player.currentMediaItem)?.mediaMetadata?.title)
+        binding.singerPlayer.setText(Objects.requireNonNull(player.currentMediaItem)?.mediaMetadata?.albumArtist)
         if (artworkUri != null) {
             val contentResolver: ContentResolver = requireContext().contentResolver
             try {
@@ -244,10 +358,22 @@ class Player : Fragment() {
         }
 
     }
-
+     fun updateCurrentSong(){
+         playerCurrentSong.name= player.currentMediaItem?.mediaMetadata?.title as String
+         playerCurrentSong.albumartUri=player.currentMediaItem?.mediaMetadata?.artworkUri
+         playerCurrentSong.singer= player.currentMediaItem?.mediaMetadata?.albumArtist as String
+        val currentMediaItem: MediaItem? = player.currentMediaItem
+        val currentUri: Uri? = currentMediaItem?.playbackProperties?.uri
+        if (currentUri != null) {
+            playerCurrentSong.uri=currentUri
+        }
+    }
     override fun onDestroy() {
         super.onDestroy()
         getActivity()?.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+    }
+    fun updateBooleanValue(newValue: Boolean) {
+        _isBooleanLiveData.value = newValue
     }
 
 }

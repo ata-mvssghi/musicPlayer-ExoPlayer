@@ -31,10 +31,6 @@
             app:destination="@id/previewFragment"
 
             />
-        <argument
-            android:name="singerName"
-            app:argType="string"
-            app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/favoriteFragment"

@@ -13,11 +13,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import com.example.a2ndproject.sharedViewModel.SharedViewModel
+import com.example.muiscplayerproject.room.MusicDatabase
 import com.example.muiscplayerproject.service.MusicService
 
 
 class MainActivity : AppCompatActivity() {
     lateinit var player:ExoPlayer
+    lateinit var db:MusicDatabase
     val sharedViewModel: SharedViewModel by lazy {
         ViewModelProvider(this)[SharedViewModel::class.java]
     }
@@ -45,8 +47,11 @@ class MainActivity : AppCompatActivity() {
             Log.i(MyTag, "player got set in main activity")
         }
         setContentView(R.layout.activity_main)
+        setupDb()
     }
-
+    fun setupDb(){
+        db=MusicDatabase(this)
+    }
     companion object{
         const val MyTag="music"
     }

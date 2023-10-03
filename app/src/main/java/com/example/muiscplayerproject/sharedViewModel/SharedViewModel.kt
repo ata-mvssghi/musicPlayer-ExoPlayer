@@ -5,13 +5,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.media3.exoplayer.ExoPlayer
+import com.tonevellah.musicplayerapp.model.Song
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class SharedViewModel : ViewModel() {
     private val _player: MutableStateFlow<ExoPlayer?> = MutableStateFlow(null)
     val player: StateFlow<ExoPlayer?> = _player
-
     fun setPlayer(player: ExoPlayer) {
         _player.value = player
     }

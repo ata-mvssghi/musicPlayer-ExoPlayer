@@ -27,7 +27,6 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.a2ndproject.adapter.OnItemClickListener
 import com.example.a2ndproject.adapter.SongAdapter
 import com.example.a2ndproject.sharedViewModel.SharedViewModel
 import com.example.a2ndproject.sharedViewModel.SharedViewModel.Companion.initializedPlaying
@@ -35,6 +34,8 @@ import com.example.muiscplayerproject.MainActivity
 import com.example.muiscplayerproject.MainActivity.Companion.MyTag
 import com.example.muiscplayerproject.R
 import com.example.muiscplayerproject.databinding.FragmentPreviewBinding
+import com.example.muiscplayerproject.fragments.Player.playerSong.playerCurrentSong
+import com.example.muiscplayerproject.fragments.PreviewFragment.playingSong.currentSong
 import com.tonevellah.musicplayerapp.model.Song
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -42,7 +43,7 @@ import kotlinx.coroutines.withContext
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-class PreviewFragment : Fragment(), OnItemClickListener {
+class PreviewFragment : Fragment() {
     lateinit var binding: FragmentPreviewBinding
     lateinit var player: ExoPlayer
     lateinit var adapter: SongAdapter
@@ -51,6 +52,9 @@ class PreviewFragment : Fragment(), OnItemClickListener {
 
     private val sharedViewModel: SharedViewModel by lazy {
         (requireActivity() as MainActivity).sharedViewModel
+    }
+    object  playingSong{
+        lateinit var currentSong:Song
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -130,8 +134,13 @@ class PreviewFragment : Fragment(), OnItemClickListener {
     }
     fun playerControls() {
         binding.bottomContainer.setOnClickListener {
-            if(initializedPlaying)
+            if(initializedPlaying) {
+//                val direction=PreviewFragmentDirections.
+//                actionPreviewFragmentToPlayer(currentSong)
                 findNavController().navigate(R.id.action_previewFragment_to_player)
+                playerCurrentSong= currentSong
+                Log.i("music", "navigated by player controls function")
+            }
             else
                 Toast.makeText(requireContext(),"Please Select A Song",Toast.LENGTH_SHORT).show()
         }
@@ -314,7 +323,7 @@ class PreviewFragment : Fragment(), OnItemClickListener {
         layoutManager.orientation=LinearLayoutManager.VERTICAL
         recyclerview.setLayoutManager(layoutManager)
 
-        adapter = SongAdapter(songs, player, this,requireContext())
+        adapter = SongAdapter(songs, player, requireContext())
         recyclerview.adapter = adapter
     }
 
@@ -363,10 +372,6 @@ class PreviewFragment : Fragment(), OnItemClickListener {
                 requestPermission()
             }
         }
-    }
-    override fun onItemClick(position: Int) {
-        findNavController().navigate(R.id.action_previewFragment_to_player)
-        Log.i(MyTag,"navigated successfully")
     }
 
 }

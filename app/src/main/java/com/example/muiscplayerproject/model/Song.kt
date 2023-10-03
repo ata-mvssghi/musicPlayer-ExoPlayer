@@ -1,6 +1,8 @@
 package com.tonevellah.musicplayerapp.model
 
 import android.net.Uri
+import android.os.Parcelable
+import java.io.Serializable
 
 data class Song
     (
@@ -14,4 +16,4 @@ data class Song
     var albumName:String,
     var albumartUri: Uri?,
     var singer:String
-)
+):Serializable
