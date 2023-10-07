@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.muiscplayerproject.typeConverter.Converters
 
-@Database(entities = [SongEntity::class], version = 3)
+@Database(entities = [SongEntity::class], version = 5)
 @TypeConverters(Converters::class)
 abstract class MusicDatabase: RoomDatabase() {
     abstract val dao:MusicDao

@@ -1,11 +1,7 @@
-package com.example.a2ndproject.sharedViewModel
+package com.example.muiscplayerproject.sharedViewModel
 
-import android.text.BoringLayout
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.media3.exoplayer.ExoPlayer
-import com.tonevellah.musicplayerapp.model.Song
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 

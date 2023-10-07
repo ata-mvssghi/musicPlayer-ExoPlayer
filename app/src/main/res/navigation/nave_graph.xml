@@ -36,5 +36,13 @@
         android:id="@+id/favoriteFragment"
         android:name="com.example.muiscplayerproject.fragments.FavoriteFragment"
         android:label="fragment_favorite"
-        tools:layout="@layout/fragment_favorite" />
+        tools:layout="@layout/fragment_favorite" >
+        <action
+            android:id="@+id/action_favoriteFragment_to_previewFragment"
+            app:destination="@id/previewFragment" />
+        <action
+            android:id="@+id/action_favoriteFragment_to_player"
+            app:enterAnim="@anim/slide_in_right"
+            app:destination="@id/player" />
+    </fragment>
 </navigation>

@@ -1,26 +1,28 @@
-package com.example.a2ndproject.adapter
+package com.example.muiscplayerproject.adapter
 
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.provider.ContactsContract
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
-import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.example.a2ndproject.sharedViewModel.SharedViewModel
+import com.example.muiscplayerproject.sharedViewModel.SharedViewModel
 import com.example.muiscplayerproject.R
 import com.example.muiscplayerproject.databinding.MusicItemBinding
 import com.example.muiscplayerproject.fragments.PreviewFragment.playingSong.currentSong
 import com.example.muiscplayerproject.service.MusicService
-import com.tonevellah.musicplayerapp.model.Song
+import com.example.muiscplayerproject.model.Song
 import java.lang.Exception
 
 class SongAdapter(
-    var songs: List<Song?>,
     var player: ExoPlayer,
     val context:Context,
 )
@@ -28,7 +30,7 @@ class SongAdapter(
 
 
     inner class SongViewHolder(private val binding: MusicItemBinding):RecyclerView.ViewHolder(binding.root){
-        fun bind(song:Song){
+        fun bind(song: Song){
             binding.songName.text=song.name
             binding.album.text=song.albumName
             binding.singer.text=song.singer
@@ -56,7 +58,18 @@ class SongAdapter(
             }
         }
     }
+    private val differCallback = object : DiffUtil.ItemCallback<Song>(){
+        override fun areItemsTheSame(oldItem: Song, newItem: Song): Boolean {
+            return oldItem.id == newItem.id &&
+                    oldItem.uri == newItem.uri &&
+                    oldItem.albumartUri == newItem.albumartUri
+        }
 
+        override fun areContentsTheSame(oldItem: Song, newItem: Song): Boolean {
+            return oldItem==newItem
+        }
+    }
+    val differ = AsyncListDiffer(this, differCallback)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
         val binding = MusicItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -64,27 +77,27 @@ class SongAdapter(
     }
 
     override fun getItemCount(): Int {
-        return songs.size
+        return differ.currentList.size
     }
 
     @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
     override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
-        val song = songs[position]
-        songs[position]?.let { holder.bind(it) }
+        Log.i("music","on bind view holder called")
+        differ.currentList[position]?.let { holder.bind(it) }
         holder.itemView.setOnClickListener {
             Intent(context,MusicService::class.java).also {
                 it.action=MusicService.Actions.Start.toString()
                 context.startService(it)
             }
-           currentSong= songs.get(position)!!
+           currentSong= differ.currentList[position]!!
+            Log.i("music","size of current list is =${differ.currentList.size}")
             //media item
-            if (!player.isPlaying) {
+
                 player.setMediaItems(getMediaItems(), position, 0)
-            }
-            else {
+            if(player.isPlaying) {
                 player.pause()
-                player.seekTo(position, 0)
             }
+            player.seekTo(position, 0)
             player.prepare()
             player.play()
             SharedViewModel.initializedPlaying=true
@@ -93,7 +106,8 @@ class SongAdapter(
     }
     private fun getMediaItems(): List<MediaItem> {
         val mediaItems: MutableList<MediaItem> = ArrayList<MediaItem>()
-        for (song in songs) {
+        Log.i("music","get media item called with list size of=${differ.currentList.size}")
+        for (song in differ.currentList) {
             val mediaItem: MediaItem = MediaItem.Builder()
                 .setUri(song?.uri)
                 .setMediaMetadata(getMetadata(song))
@@ -101,12 +115,6 @@ class SongAdapter(
             mediaItems.add(mediaItem)
         }
         return mediaItems
-    }
-    private fun getMediaItem(song: Song?): MediaItem {
-        return MediaItem.Builder()
-            .setUri(song?.uri)
-            .setMediaMetadata(getMetadata(song))
-            .build()
     }
     private fun getMetadata(song: Song?): MediaMetadata {
         return MediaMetadata.Builder()

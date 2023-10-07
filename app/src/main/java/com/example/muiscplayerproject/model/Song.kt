@@ -1,4 +1,4 @@
-package com.tonevellah.musicplayerapp.model
+package com.example.muiscplayerproject.model
 
 import android.net.Uri
 import android.os.Parcelable

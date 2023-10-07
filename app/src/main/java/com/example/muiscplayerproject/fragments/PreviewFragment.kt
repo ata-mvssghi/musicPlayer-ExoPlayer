@@ -1,6 +1,7 @@
 package com.example.muiscplayerproject.fragments
 
 import android.Manifest
+
 import android.content.ContentUris
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -12,10 +13,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.app.ActivityCompat.requestPermissions
-import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
-import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.appcompat.widget.SearchView
+
 import androidx.core.content.ContextCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.MediaItem
@@ -23,38 +24,39 @@ import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.setupWithNavController
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.a2ndproject.adapter.SongAdapter
-import com.example.a2ndproject.sharedViewModel.SharedViewModel
-import com.example.a2ndproject.sharedViewModel.SharedViewModel.Companion.initializedPlaying
+import com.example.muiscplayerproject.adapter.SongAdapter
+import com.example.muiscplayerproject.sharedViewModel.SharedViewModel
+import com.example.muiscplayerproject.sharedViewModel.SharedViewModel.Companion.initializedPlaying
 import com.example.muiscplayerproject.MainActivity
 import com.example.muiscplayerproject.MainActivity.Companion.MyTag
 import com.example.muiscplayerproject.R
 import com.example.muiscplayerproject.databinding.FragmentPreviewBinding
 import com.example.muiscplayerproject.fragments.Player.playerSong.playerCurrentSong
 import com.example.muiscplayerproject.fragments.PreviewFragment.playingSong.currentSong
-import com.tonevellah.musicplayerapp.model.Song
+import com.example.muiscplayerproject.model.Song
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
 
 class PreviewFragment : Fragment() {
     lateinit var binding: FragmentPreviewBinding
     lateinit var player: ExoPlayer
     lateinit var adapter: SongAdapter
     lateinit var recyclerview: RecyclerView
+    var  songs: ArrayList<Song> = ArrayList<Song>()
     val permissionRequestCode = 1
 
     private val sharedViewModel: SharedViewModel by lazy {
         (requireActivity() as MainActivity).sharedViewModel
     }
     object  playingSong{
-        lateinit var currentSong:Song
+        lateinit var currentSong: Song
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,6 +80,7 @@ class PreviewFragment : Fragment() {
                 }
                 R.id.favorites->{
                     navController.navigate(R.id.action_previewFragment_to_favoriteFragment)
+
                     true
                 }
                 else->false
@@ -112,13 +115,37 @@ class PreviewFragment : Fragment() {
             requestPermission()
         }
         else{
-            fetchSongs()
-            //player controls
-            playerControls()
-            initiate()
+            if(isAdded) {
+                fetchSongs()
+                //player controls
+                playerControls()
+                initiate()
+            }
+        }
+        var job:Job?=null
+        binding.editTextText.addTextChangedListener {
+            editable->
+            job?.cancel()
+            job= MainScope().launch {
+                delay(300)
+                editable.let {
+                    if(editable.toString()!=null){
+                        search(editable.toString())
+                    }
+                }
+            }
         }
         return binding.root
 
+    }
+    private fun search(query:String){
+        val newList: ArrayList<Song> = ArrayList<Song>()
+        for (song in songs){
+            if (song.name.contains(query, ignoreCase = true)){
+                newList.add(song)
+            }
+        }
+        adapter.differ.submitList(newList)
     }
     fun initiate(){
         Log.i(MyTag,"initiate called")
@@ -212,108 +239,109 @@ class PreviewFragment : Fragment() {
             }
         })
     }
+    private fun fetchSongs() {
+        CoroutineScope(Dispatchers.IO).launch{
+        //define list to carry the songs
+        val songLibraryUri: Uri
+        songLibraryUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
+        } else {
+            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+        }
 
-    fun fetchSongs() {
-            //define list to carry the songs
-            val songs: ArrayList<Song> = ArrayList<Song>()
-                val songLibraryUri: Uri
-                songLibraryUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
-                } else {
-                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+        //projection
+        val projection = arrayOf(
+            MediaStore.Audio.Media._ID,
+            MediaStore.Audio.Media.DISPLAY_NAME,
+            MediaStore.Audio.Media.DURATION,
+            MediaStore.Audio.Media.SIZE,
+            MediaStore.Audio.Media.ALBUM_ID,
+            MediaStore.Audio.Media.ALBUM,
+            MediaStore.Audio.Media.ARTIST
+        )
+
+        //sort order
+        val sortOrder = MediaStore.Audio.Media.DATE_MODIFIED + " DESC"
+
+
+        requireContext().contentResolver.query(
+            songLibraryUri,
+            projection,
+            null,
+            null,
+            sortOrder
+        )
+            ?.use { cursor ->
+
+                //cache the cursor indices
+                val idColumn: Int = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
+                val nameColumn: Int =
+                    cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME)
+                val durationColumn: Int =
+                    cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
+                val sizeColumn: Int =
+                    cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE)
+                val albumIDColumn: Int =
+                    cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID)
+                val albumNameColumn: Int =
+                    cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM)
+                val singerName: Int =
+                    cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)
+
+                //getting the values
+                while (cursor.moveToNext()) {
+                    //get values of columns for a give audio file
+                    val id: Long = cursor.getLong(idColumn)
+                    var name: String = cursor.getString(nameColumn)
+                    val duration: Int = cursor.getInt(durationColumn)
+                    val size: Int = cursor.getInt(sizeColumn)
+                    val albumID: Long = cursor.getLong(albumIDColumn)
+                    val albumName: String = cursor.getString(albumNameColumn)
+                    val artistName: String = cursor.getString(singerName)
+
+                    //song uri
+                    val uri =
+                        ContentUris.withAppendedId(
+                            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                            id
+                        )
+                    //album art uri
+                    val albumartUri = ContentUris.withAppendedId(
+                        Uri.parse("content://media/external/audio/albumart"),
+                        albumID
+                    )
+
+                    //remove .mp3 extension on song's name
+                    name = name.substring(0, name.lastIndexOf("."))
+
+                    //song item
+                    val song = Song(
+                        id,
+                        uri,
+                        name,
+                        duration,
+                        size,
+                        albumID,
+                        albumName,
+                        albumartUri,
+                        artistName
+                    )
+                        //add song to songs list
+                        songs.add(song)
+                        Log.i(MyTag, "does these call again each time?")
                 }
-
-                //projection
-                val projection = arrayOf(
-                    MediaStore.Audio.Media._ID,
-                    MediaStore.Audio.Media.DISPLAY_NAME,
-                    MediaStore.Audio.Media.DURATION,
-                    MediaStore.Audio.Media.SIZE,
-                    MediaStore.Audio.Media.ALBUM_ID,
-                    MediaStore.Audio.Media.ALBUM,
-                    MediaStore.Audio.Media.ARTIST
-                )
-
-                //sort order
-                val sortOrder = MediaStore.Audio.Media.DATE_MODIFIED + " DESC"
-
-
-                requireContext().contentResolver.query(
-                    songLibraryUri,
-                    projection,
-                    null,
-                    null,
-                    sortOrder
-                )
-                    ?.use { cursor ->
-
-                        //cache the cursor indices
-                        val idColumn: Int = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
-                        val nameColumn: Int =
-                            cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME)
-                        val durationColumn: Int =
-                            cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
-                        val sizeColumn: Int =
-                            cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE)
-                        val albumIDColumn: Int =
-                            cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID)
-                        val albumNameColumn: Int =
-                            cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM)
-                        val singerName: Int =
-                            cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)
-
-                        //getting the values
-                        while (cursor.moveToNext()) {
-                            //get values of columns for a give audio file
-                            val id: Long = cursor.getLong(idColumn)
-                            var name: String = cursor.getString(nameColumn)
-                            val duration: Int = cursor.getInt(durationColumn)
-                            val size: Int = cursor.getInt(sizeColumn)
-                            val albumID: Long = cursor.getLong(albumIDColumn)
-                            val albumName: String = cursor.getString(albumNameColumn)
-                            val artistName: String = cursor.getString(singerName)
-
-                            //song uri
-                            val uri =
-                                ContentUris.withAppendedId(
-                                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                                    id
-                                )
-
-                            //album art uri
-                            val albumartUri = ContentUris.withAppendedId(
-                                Uri.parse("content://media/external/audio/albumart"),
-                                albumID
-                            )
-
-                            //remove .mp3 extension on song's name
-                            name = name.substring(0, name.lastIndexOf("."))
-
-                            //song item
-                            val song = Song(
-                                id,
-                                uri,
-                                name,
-                                duration,
-                                size,
-                                albumID,
-                                albumName,
-                                albumartUri,
-                                artistName
-                            )
-                            //add song to songs list
-                            songs.add(song)
-                            Log.i(MyTag, "does these call again each time?")
-                        }
-
+                withContext(Dispatchers.Main) {
                     //show songs on rv
                     showSongs(songs)
                 }
+            }
+    }
 
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        Log.i("music","on destroy of preview fragment called")
     }
 
     private fun showSongs(songs: List<Song>) {
@@ -323,11 +351,10 @@ class PreviewFragment : Fragment() {
         layoutManager.orientation=LinearLayoutManager.VERTICAL
         recyclerview.setLayoutManager(layoutManager)
 
-        adapter = SongAdapter(songs, player, requireContext())
+        adapter = SongAdapter( player, requireContext())
+        adapter.differ.submitList(songs)
         recyclerview.adapter = adapter
     }
-
-
     private fun isPermissionGranted(): Boolean {
         return ContextCompat.checkSelfPermission(
             requireContext(),
@@ -375,3 +402,4 @@ class PreviewFragment : Fragment() {
     }
 
 }
+

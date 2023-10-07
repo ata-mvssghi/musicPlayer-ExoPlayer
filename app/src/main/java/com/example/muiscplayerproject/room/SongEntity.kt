@@ -8,9 +8,10 @@ import androidx.room.PrimaryKey
 data class SongEntity (
     //member variables
     @PrimaryKey(autoGenerate = true)
-    var id: Int=0,
+    var id: Int,
     var uri: Uri,
     var name: String,
     var albumartUri: Uri?,
-    var singer:String
+    var singer:String,
+    var albumName:String
         )

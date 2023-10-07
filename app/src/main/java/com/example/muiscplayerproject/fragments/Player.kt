@@ -4,15 +4,12 @@ import android.content.ContentResolver
 import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.os.Bundle
-import android.text.BoringLayout
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.Toast
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -23,19 +20,17 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
-import com.example.a2ndproject.sharedViewModel.SharedViewModel
+import com.example.muiscplayerproject.sharedViewModel.SharedViewModel
 import com.example.muiscplayerproject.MainActivity
 import com.example.muiscplayerproject.MainActivity.Companion.MyTag
 import com.example.muiscplayerproject.R
 import com.example.muiscplayerproject.databinding.FragmentPlayerBinding
 import com.example.muiscplayerproject.fragments.Player.playerSong.playerCurrentSong
-import com.example.muiscplayerproject.fragments.PreviewFragment.playingSong.currentSong
 import com.example.muiscplayerproject.room.MusicDao
 import com.example.muiscplayerproject.room.MusicDatabase
 import com.example.muiscplayerproject.room.SongEntity
-import com.tonevellah.musicplayerapp.model.Song
+import com.example.muiscplayerproject.model.Song
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -46,7 +41,6 @@ import java.util.Objects
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
-import kotlin.properties.Delegates
 
 class Player : Fragment() {
     lateinit var player: ExoPlayer
@@ -55,10 +49,11 @@ class Player : Fragment() {
     lateinit var sharedViewModel: SharedViewModel
     lateinit var db:MusicDatabase
     lateinit var dao: MusicDao
+    var exists=false
     private val _isBooleanLiveData = MutableLiveData<Boolean>()
-    val isBooleanLiveData: LiveData<Boolean> get() = _isBooleanLiveData
+    val isBooleanLiveData: LiveData<Boolean> = _isBooleanLiveData
     object  playerSong{
-        lateinit var playerCurrentSong:Song
+        lateinit var playerCurrentSong: Song
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,30 +87,13 @@ class Player : Fragment() {
             }
         }
         gettingPlayer()
+        doesItExist()
         //back btn clicked
         binding.back.setOnClickListener {
             Log.i("music","back to preview fragment")
             findNavController().popBackStack()
         }
 
-        var exists=false
-        CoroutineScope(Dispatchers.IO).launch {
-            if(dao.doesSongNameExist(playerCurrentSong.name)>0){
-            Log.i("music","exists!!!!!!!!!!!!!!!!!!!!!!!!!!")
-            exists=true
-            }
-            withContext(Dispatchers.Main){
-                if(exists){
-                    binding.saveImage.setImageResource(R.drawable.favortie)
-                    Log.i("music ","paho")
-                    updateBooleanValue(true)
-                }
-                else{
-                    binding.saveImage.setImageResource(R.drawable.favorite_border)
-                    updateBooleanValue(false)
-                }
-            }
-        }
         isBooleanLiveData.observe(viewLifecycleOwner , Observer {
             newValue->
             if(newValue){
@@ -179,7 +157,7 @@ class Player : Fragment() {
                 binding.playButton.setImageResource(R.drawable.player_pause)
                 //checking for if the fragment is attached to any context or not to prevent issues relateed
                 // to context calls
-                if(isAdded()) {
+                if(isAdded) {
                     showCurrentArtwork()
                     Log.i(MyTag,"on media item transition called")
                     updatePlayerPositionProgress()
@@ -187,7 +165,9 @@ class Player : Fragment() {
                 if (!player.isPlaying) {
                     player.play()
                 }
+                Log.i("music","mmd is my cousin")
                 updateCurrentSong()
+
             }
             override fun onPlaybackStateChanged(playbackState: Int) {
                 if (playbackState == ExoPlayer.STATE_READY) {
@@ -257,7 +237,6 @@ class Player : Fragment() {
                 private var progressValue = 0
 
                 override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                    Log.i(MyTag,"on progress changed")
                     progressValue = progress
                 }
 
@@ -301,11 +280,12 @@ class Player : Fragment() {
                             updateBooleanValue(true)
                         }
                         val newEntity = SongEntity(
-                            playerCurrentSong.id.toInt(),
+                            0,
                             playerCurrentSong.uri,
                             playerCurrentSong.name,
                             playerCurrentSong.albumartUri,
-                            playerCurrentSong.singer
+                            playerCurrentSong.singer,
+                            playerCurrentSong.albumName
                         )
                         CoroutineScope(Dispatchers.Default).launch {
                             dao.insertSongToFavorites(
@@ -367,6 +347,7 @@ class Player : Fragment() {
         if (currentUri != null) {
             playerCurrentSong.uri=currentUri
         }
+         doesItExist()
     }
     override fun onDestroy() {
         super.onDestroy()
@@ -375,5 +356,22 @@ class Player : Fragment() {
     fun updateBooleanValue(newValue: Boolean) {
         _isBooleanLiveData.value = newValue
     }
-
+    fun doesItExist(){
+        CoroutineScope(Dispatchers.IO).launch {
+            if(dao.doesSongNameExist(playerCurrentSong.name)>0){
+                Log.i("music","exists!!!!!!!!!!!!!!!!!!!!!!!!!! , name=${playerCurrentSong.name}")
+                exists=true
+            }
+            else
+                exists=false
+            withContext(Dispatchers.Main){
+                if(exists){
+                    updateBooleanValue(true)
+                }
+                else{
+                    updateBooleanValue(false)
+                }
+            }
+        }
+    }
 }

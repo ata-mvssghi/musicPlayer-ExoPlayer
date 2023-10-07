@@ -2,17 +2,15 @@ package com.example.muiscplayerproject
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.ViewModelProvider
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
-import com.example.a2ndproject.sharedViewModel.SharedViewModel
+import com.example.muiscplayerproject.sharedViewModel.SharedViewModel
 import com.example.muiscplayerproject.room.MusicDatabase
 import com.example.muiscplayerproject.service.MusicService
 

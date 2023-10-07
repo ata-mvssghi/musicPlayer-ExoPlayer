@@ -1,47 +1,28 @@
 package com.example.muiscplayerproject.service
 
-import android.Manifest
-import android.annotation.SuppressLint
-import android.app.Application
 import android.app.Notification
 import android.app.PendingIntent
 import android.app.Service
 import android.content.ContentResolver
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.media.MediaSession2Service.MediaNotification
-import android.os.Binder
-import android.os.Build
 import android.os.IBinder
-import android.support.v4.media.session.PlaybackStateCompat
-import android.util.Log
 import android.widget.RemoteViews
-import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.offline.DownloadService.startForeground
 import androidx.media3.ui.PlayerNotificationManager.ACTION_NEXT
 import androidx.media3.ui.PlayerNotificationManager.ACTION_PREVIOUS
 import androidx.media3.ui.PlayerNotificationManager.ACTION_PLAY
-import com.bumptech.glide.Glide
-import com.example.a2ndproject.sharedViewModel.SharedViewModel
 import com.example.muiscplayerproject.MainActivity
-import com.example.muiscplayerproject.MainActivity.Companion.MyTag
+import com.example.muiscplayerproject.sharedViewModel.SharedViewModel
 import com.example.muiscplayerproject.R
 import com.example.muiscplayerproject.broadcastReceiver.NotificationDismissReceiver
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.lang.Exception
-import androidx.media.app.NotificationCompat as MediaNotificationCompat
 
 //had to add this annotation hope it doesn't matter
 @UnstableApi class MusicService : Service() {
@@ -173,7 +154,19 @@ import androidx.media.app.NotificationCompat as MediaNotificationCompat
         } else {
             remoteViews.setImageViewResource(R.id.albumPic,R.drawable.headphones)
         }
+        //add an intent to start main activity when clikcing on it
+        val intent = Intent(this, MainActivity::class.java)
+// Set the action for the intent (optional, but good practice)
+        intent.action = "android.intent.action.MAIN"
+        intent.addCategory("android.intent.category.LAUNCHER")
 
+// Create a PendingIntent
+        val pendingIntent = PendingIntent.getActivity(
+            this,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT
+        )
         notification=NotificationCompat.Builder(this,"running music")
             .setSmallIcon(R.drawable.baseline_audiotrack_24)
             .setContentTitle(player.currentMediaItem?.mediaMetadata?.title)
@@ -181,6 +174,7 @@ import androidx.media.app.NotificationCompat as MediaNotificationCompat
             .setStyle( NotificationCompat.DecoratedCustomViewStyle())
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setContentIntent(pendingIntent)
             .build()
         startForeground(1,notification)
     }

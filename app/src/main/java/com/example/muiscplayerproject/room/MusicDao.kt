@@ -2,10 +2,8 @@ package com.example.muiscplayerproject.room
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
-import com.tonevellah.musicplayerapp.model.Song
 
 @Dao
 interface MusicDao {
@@ -15,4 +13,6 @@ interface MusicDao {
      fun insertSongToFavorites(song:SongEntity)
     @Query("DELETE FROM songs WHERE name = :songName")
      fun deleteSongByName(songName: String):Int
+     @Query("SELECT * FROM songs")
+    fun getAllSongs(): List<SongEntity>
 }
