@@ -174,7 +174,7 @@ import java.lang.Exception
             .setStyle( NotificationCompat.DecoratedCustomViewStyle())
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
-            .setContentIntent(pendingIgit ntent)
+            .setContentIntent(pendingIntent)
             .build()
         startForeground(1,notification)
     }
