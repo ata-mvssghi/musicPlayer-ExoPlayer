@@ -240,8 +240,10 @@ class PreviewFragment : Fragment() {
         })
     }
     private fun fetchSongs() {
+
         CoroutineScope(Dispatchers.IO).launch{
         //define list to carry the songs
+            songs.removeAll(songs)
         val songLibraryUri: Uri
         songLibraryUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)

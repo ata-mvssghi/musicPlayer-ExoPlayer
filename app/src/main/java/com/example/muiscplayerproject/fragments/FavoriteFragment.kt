@@ -118,7 +118,7 @@ class FavoriteFragment : Fragment() {
                      newList.add(song)
                  }
              }
-             adapter.differ.submitList(newList)
+             adapter.differ.submitList(newList.reversed())
          }
     }
     fun initiate(){
@@ -137,6 +137,7 @@ class FavoriteFragment : Fragment() {
     fun fetchSongs() {
         //define list to carry the songs
         // Assuming you are in a Fragment or an Activity
+        Log.i("music","fetched song called in favorite frag")
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val songEntities = async(Dispatchers.IO) {
@@ -145,8 +146,9 @@ class FavoriteFragment : Fragment() {
 
                 withContext(Dispatchers.Main) {
                         Log.i("music","size=${songEntities.size}")
+                        songs.removeAll(songs)
                         val tempList = songEntities.iterator()
-                        while (tempList!!.hasNext()) {
+                        while (tempList.hasNext()) {
                             val songEntity = tempList.next()
                             val newSong = Song(
                                 songEntity.id.toLong(),
@@ -159,9 +161,9 @@ class FavoriteFragment : Fragment() {
                                 songEntity.albumartUri,
                                 songEntity.singer
                             )
-                            songs.add(newSong)
+                                 songs.add(newSong)
                         }
-                    showSongs(songs)
+                    showSongs(songs.reversed())
                 }
                 Log.i("music","songs.size=${songs.size}")
             } catch (e: Exception) {
@@ -179,6 +181,7 @@ class FavoriteFragment : Fragment() {
         recyclerview.layoutManager = layoutManager
 
         adapter = SongAdapter( player, requireContext())
+        Log.i("music", "size of differ's list after deletion = ${adapter.differ.currentList.size}")
         adapter.differ.submitList(songs)
         recyclerview.adapter = adapter
         var job: Job?=null

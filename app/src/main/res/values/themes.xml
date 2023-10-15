@@ -4,6 +4,13 @@
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
-
+    <style name="TextViewStyle" parent="Widget.Design.TextInputLayout">
+        <item name="shapeAppearanceOverlay">@style/mySearchViewStyle</item>
+    </style>
     <style name="Theme.MuiscPlayerProject" parent="Base.Theme.MuiscPlayerProject" />
+    <style name="mySearchViewStyle" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+        <item name="cornerSize">10%</item>
+        <item name="cornerFamilyBottomLeft">cut</item>
+    </style>
+
 </resources>
