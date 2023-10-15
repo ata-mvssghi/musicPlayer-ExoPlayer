@@ -13,6 +13,10 @@ Welcome to the Music Player App repository! This Android application is designed
 - **Service Class:** Utilizes a service class to enable push notifications and ensure that the app continues playing songs even after it has been closed. This enhances the user experience by allowing seamless music playback.
 
 - **Notification with Custom Layout:** When a user clicks on a song in the Song List Fragment, a custom notification is built. This notification includes play, pause, next, and back buttons, along with an image of the current song being played.
+  
+- **Add songs to favorite -> storing the favortie songs in in room data base and displaying them in another fragment called "FavoriteFragment"
+  
+- **Searching in songs via room library and quering for songs assigned as favorite songs
 
 - **Exo Player Library:** The app integrates the "Exo Player" library as the primary player for handling audio playback. This powerful library enhances the app's capabilities and ensures a robust music streaming experience.
 
@@ -34,6 +38,7 @@ To run the Music Player App locally, follow these steps:
 
 - Exo Player Library: [Link to Exo Player GitHub](https://github.com/google/ExoPlayer)
 - Service Library for pushing notificaions
+- room library of android
 
 ## Contributing
 
@@ -44,8 +49,8 @@ We welcome contributions to enhance the functionality and features of the Music 
 
 For any questions or concerns, please contact the project maintainer:
 
-- Your Ata-Mvssghi
-- Your atamovassagi@gmail.com
-- Your GitHub Profile: https://github.com/ata-mvssghi
+- Ata-Mvssghi
+- email: atamovassagi@gmail.com
+-  GitHub Profile: https://github.com/ata-mvssghi
 
 Happy coding! 🎶
