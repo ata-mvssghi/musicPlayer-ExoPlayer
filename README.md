@@ -39,6 +39,12 @@ To run the Music Player App locally, follow these steps:
 - Exo Player Library: [Link to Exo Player GitHub](https://github.com/google/ExoPlayer)
 - Service Library for pushing notificaions
 - room library of android
+![Screenshot_2023-10-15-15-42-05-172_com example muiscplayerproject](https://github.com/ata-mvssghi/musicPlayer-ExoPlayer/assets/99190904/89efae55-e1bd-4862-94f2-27201c465eae)
+![Screenshot_2023-10-15-15-42-11-113_com example muiscplayerproject](https://github.com/ata-mvssghi/musicPlayer-ExoPlayer/assets/99190904/fdedcde2-1604-4914-910f-f643e27e3168)
+
+![Screenshot_2023-10-15-15-41-27-453_com example muiscplayerproject](https://github.com/ata-mvssghi/musicPlayer-ExoPlayer/assets/99190904/34aa6866-cba8-4052-b9c9-2c23e43781a5)
+
+![Screenshot_2023-10-15-15-42-28-344_com example muiscplayerproject](https://github.com/ata-mvssghi/musicPlayer-ExoPlayer/assets/99190904/c86c83df-3f3b-487c-91a4-bd1c48962c5c)
 
 ## Contributing
 
